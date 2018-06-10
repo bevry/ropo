@@ -6,19 +6,20 @@ const readmePath = require('path').join(__dirname, '..', 'README.md')
 
 // and even do asynchronous replacements
 async function main () {
+	const source = await readFile(readmePath, 'utf8')
 	const result = await replaceElementAsync(
-		await readFile(readmePath),
+		source,
 		'x-example',
 		async function (element, attributes) {
 			const file = extractAttribute(attributes, 'file')
-			const result = require('fs').promises.readFile(file, 'utf8')
-			return [
-				`<x-example file="${file}>`,
+			const source = await require('fs').promises.readFile(file, 'utf8')
+			const result = [
 				'``` js',
-				result,
-				'```',
-				'</x-example>'
+				source,
+				'```'
 			].join('\n')
+			result.wrap = true
+			return result
 		}
 	)
 	await writeFile(readmePath, result)

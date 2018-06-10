@@ -3,7 +3,7 @@
 
 const { equal } = require('assert-helpers')
 const joe = require('joe')
-const { replaceElement, replaceElementAsync } = require('./')
+const { replaceElementSync, replaceElementAsync } = require('./')
 
 // ------------------------------------
 // Helpers
@@ -42,26 +42,26 @@ const num2 = Math.pow(
 
 const tests = [
 	{
-		search: 'uppercase',
+		search: /uc|uppercase/,
 		source: `
 			breakfast
 			<title>blah</title>
 			brunch
-			<uppercase:1>
+			<uc>
 				one
-					<uppercase:2>
+					<uppercase>
 						two
-					</uppercase:2>
+					</uppercase>
 				three
-			</uppercase:1>
+			</uc>
 			lunch
-			<uppercase:1>
+			<uc>
 				four
-					<uppercase:2>
+					<uppercase>
 						five
-					</uppercase:2>
+					</uppercase>
 				six
-			</uppercase:1>
+			</uc>
 			dinner`.replace(/^\t{3}/gm, '').trim(),
 		expected: `
 			breakfast
@@ -75,31 +75,31 @@ const tests = [
 				FIVE
 			SIX
 			dinner`.replace(/^\t{3}/gm, '').trim(),
-		replace (element, attributes, content) {
+		replace (match, content) {
 			return trimIndentation(content).toUpperCase()
 		}
 	},
 	{
-		search: 'invert',
+		search: /in|invert/,
 		source: `
 			breakfast
 			<title>blah</title>
 			brunch
-			<invert:1>
+			<in>
 				one
-					<invert:2>
+					<invert>
 						two
-					</invert:2>
+					</invert>
 				three
-			</invert:1>
+			</in>
 			lunch
-			<invert:1>
+			<in>
 				four
-					<invert:2>
+					<invert>
 						five
-					</invert:2>
+					</invert>
 				six
-			</invert:1>
+			</in>
 			dinner`.replace(/^\t{3}/gm, '').trim(),
 		expected: `
 			breakfast
@@ -113,33 +113,33 @@ const tests = [
 			five\t
 			xis
 			dinner`.replace(/^\t{3}/gm, '').trim(),
-		replace (element, attributes, content) {
+		replace (match, content) {
 			return trimIndentation(content).split('\n').map((line) => line.split('').reverse().join('')).join('\n')
 		}
 	},
 	{
-		search: 'power',
+		search: /pow|power/,
 		source: `
 			breakfast
 			<title>blah</title>
 			brunch
-			<power:1>
+			<pow>
 				2
-					<power:2>
+					<power>
 						3
 						4
-					</power:2>
+					</power>
 				5
-			</power:1>
+			</pow>
 			lunch
-			<power:1>
+			<pow>
 				6
-					<power:2>
+					<power>
 						7
 						8
-					</power:2>
+					</power>
 				9
-			</power:1>
+			</pow>
 			dinner`.replace(/^\t{3}/gm, '').trim(),
 		expected: `
 			breakfast
@@ -149,7 +149,7 @@ const tests = [
 			lunch
 			${num2}
 			dinner`.replace(/^\t{3}/gm, '').trim(),
-		replace (element, attributes, content) {
+		replace (match, content) {
 			return trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 		}
 	}
@@ -160,9 +160,9 @@ const tests = [
 
 joe.suite('replace-html-element', function (suite) {
 	tests.forEach(function ({ search, source, expected, replace }) {
-		suite(search, function (suite, test) {
+		suite(search.source, function (suite, test) {
 			test('replaceElement', function () {
-				const actual = replaceElement(source, search, replace)
+				const actual = replaceElementSync(source, search, replace)
 				equal(actual, expected)
 			})
 			test('replaceElementAsync', function (done) {

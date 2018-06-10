@@ -80,10 +80,10 @@
   "main": "source/index.js",
   "browser": "source/index.js",
   "dependencies": {
-    "remove-indentation": "^1.0.0",
     "typechecker": "^4.5.0"
   },
   "devDependencies": {
+    "await-spawn": "^2.1.1",
     "assert-helpers": "^4.5.1",
     "documentation": "^8.0.0",
     "eslint": "^4.19.1",

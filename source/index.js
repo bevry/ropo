@@ -3,6 +3,25 @@
 
 const { isRegExp } = require('typechecker')
 
+// (?:\\:[-:_a-z0-9]+)?)
+// (?<suffix>:[-:_a-z0-9]+)?)
+
+/**
+ * Performs an operation on the content and returns the result
+ * @callback replaceSyncCallback
+ * @param {object} match
+ * @param {string} content
+ * @returns {string}
+ */
+
+/**
+ * Performs an operation on the content and resolves the result
+ * @callback replaceAsyncCallback
+ * @param {object} match
+ * @param {string} content
+ * @returns {Promise<string>}
+ */
+
 /**
  * Returns the value of a specific attribute
  * @param {string} attributes - the string of attributes to fetch from
@@ -21,22 +40,31 @@ function extractAttribute (attributes, attribute) {
 }
 
 /**
- * Performs an operation on the content and returns the result
- * @callback replaceElement~replaceCallback
- * @param {string} element
- * @param {string} attributes
- * @param {string} content
+ * Replaces each iteration of the element with the result of the replace function
+ * @param {string} source - the source string to replace elements within
+ * @param {regexp} regex - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
+ * @param {replaceSyncCallback} replace - the callback to perform the replacement
  * @returns {string}
  */
+function replaceSync (source, regex, replace) {
+	const result = source.replace(regex, function (...args) {
+		const group = args[args.length - 1]
+		const inner = group.inner
+		const bubbleResult = replaceSync(inner, regex, replace)
+		const innerResult = replace(group, bubbleResult)
+		return innerResult
+	})
+	return result
+}
 
 /**
  * Replaces each iteration of the element with the result of the replace function
- * @param {string} html - the source string to replace elements within
+ * @param {string} source - the source string to replace elements within
  * @param {string|regexp} search - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
- * @param {replaceElement~replaceCallback} replace - the callback to perform the replacement
+ * @param {replaceSyncCallback} replace - the callback to perform the replacement
  * @returns {string}
  */
-function replaceElement (html, search, replace) {
+function replaceElementSync (source, search, replace) {
 	let searchFlags = 'g', searchSource = search
 	if (isRegExp(search)) {
 		searchFlags = [...new Set(
@@ -46,48 +74,10 @@ function replaceElement (html, search, replace) {
 		)].join('')
 		searchSource = search.source
 	}
-	const regex = new RegExp(`<(${searchSource}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, searchFlags)
-	const result = html.replace(regex, function (outerHTML, element, attributes, innerHTML) {
-		const bubbleResult = replaceElement(innerHTML, search, replace)
-		const innerResult = replace(element, attributes, bubbleResult)
-		return innerResult
-	})
+	const regex = new RegExp(`<(?<element>${searchSource})(?<attributes>\\s+[^>]+)?>(?<inner>[\\s\\S]+?)<\\/\\k<element>>`, searchFlags)
+	const result = replaceSync(source, regex, replace)
 	return result
 }
-
-/**
- * Performs an operation on the content and resolves the result
- * @callback replaceElementAsync~replaceCallback
- * @param {string} element
- * @param {string} attributes
- * @param {string} content
- * @returns {Promise<string>}
- */
-
-/**
- * Replaces each iteration of the element with the result of the replace function, which should return a promise
- * @param {string} html - the source string to replace elements within
- * @param {string|regexp} search - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
- * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
- * @returns {Promise<string>}
- */
-async function replaceElementAsync (html, search, replace) {
-	let searchFlags = '', searchSource = search
-	if (isRegExp(search)) {
-		searchFlags = search.flags
-		searchSource = search.source
-	}
-	const regex = new RegExp(`<(${searchSource}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, searchFlags)
-	const match = html.match(regex)
-	if (!match) return html
-	const [outerHTML, element, attributes, innerHTML] = match
-	const bubbleResult = await replaceElementAsync(innerHTML, search, replace)
-	const innerResult = await replace(element, attributes, bubbleResult)
-	const result = match.input.replace(outerHTML, innerResult)
-	return await replaceElementAsync(result, search, replace)
-}
-
-module.exports = { extractAttribute, replaceElement, replaceElementAsync }
 
 /**
  * Replaces each iteration of the element with the result of the replace function, which should return a promise
@@ -97,8 +87,8 @@ module.exports = { extractAttribute, replaceElement, replaceElementAsync }
  * @returns {Promise<string>}
  */
 async function replaceAsync (source, regex, replace) {
+	// evaluate if the `y` (sticky) flag will speed this up
 	const match = source.match(regex)
-	console.log(match)
 	if (!match) return source
 	const outer = match.groups.outer || match[0]
 	const inner = match.groups.inner
@@ -114,11 +104,32 @@ async function replaceAsync (source, regex, replace) {
 /**
  * Replaces each iteration of the element with the result of the replace function, which should return a promise
  * @param {string} source - the source string to replace elements within
+ * @param {string|regex} element - the regex string/instance for finding the element
  * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
  * @returns {Promise<string>}
  */
-async function replaceHTMLElementsAsync (source, replace) {
-	const regex = new RegExp('<(?<element>[-a-z]+)(?<attributes> +[^>]+)?>(?<inner>[\\s\\S]+?)<\\/\\1>')
+async function replaceElementAsync (source, element, replace) {
+	let searchFlags = '', searchSource = element
+	if (isRegExp(element)) {
+		searchFlags = [...new Set(
+			searchFlags.split('').concat(
+				element.flags.split('')
+			)
+		)].join('')
+		searchSource = element.source
+	}
+	const regex = new RegExp(`<(?<element>${searchSource})(?<attributes>\\s+[^>]+)?>(?<inner>[\\s\\S]+?)<\\/\\k<element>>`, searchFlags)
+	return await replaceAsync(source, regex, replace)
+}
+
+/**
+ * Replaces each iteration of the element with the result of the replace function, which should return a promise
+ * @param {string} source - the source string to replace elements within
+ * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @returns {Promise<string>}
+ */
+async function replaceElementsAsync (source, replace) {
+	const regex = new RegExp('<(?<element>[-a-z]+)(?<attributes> +[^>]+)?>(?<inner>[\\s\\S]+?)<\\/\\k<element>>')
 	return await replaceAsync(source, regex, replace)
 }
 
@@ -130,8 +141,8 @@ async function replaceHTMLElementsAsync (source, replace) {
  */
 async function replaceCommentElementsAsync (source, replace) {
 	// don't code it directly, as eslint will fail, as it does not yet support regex groups
-	const regex = new RegExp('<!-- <(?<element>[-a-z]+)(?<attributes> +[^>]+)?> -->(?<inner>[\\s\\S]+?)<!-- <\\/\\1> -->')
+	const regex = new RegExp('<!-- <(?<element>[-a-z]+)(?<attributes> +[^>]+)?> -->(?<inner>[\\s\\S]+?)<!-- <\\/\\k<element>> -->')
 	return await replaceAsync(source, regex, replace)
 }
 
-module.exports = { extractAttribute, replaceElement, replaceElementAsync, replaceHTMLElementsAsync, replaceCommentElementsAsync }
+module.exports = { extractAttribute, replaceElementSync, replaceElementAsync, replaceElementsAsync, replaceCommentElementsAsync }

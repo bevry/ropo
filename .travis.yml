@@ -1,0 +1,33 @@
+sudo: false
+language: node_js
+node_js:
+- '0.8'
+- '0.10'
+- '0.12'
+- '4'
+- '6'
+- '8'
+- '10'
+matrix:
+  fast_finish: true
+  allow_failures:
+  - node_js: '0.8'
+  - node_js: '0.10'
+  - node_js: '0.12'
+cache:
+  directories:
+  - "$HOME/.npm"
+  - "$HOME/.yarn-cache"
+install:
+- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/1ec050bc004d0e2161cb5286c247850d24aecc02/scripts/node-install.bash)"
+before_script:
+- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/1ec050bc004d0e2161cb5286c247850d24aecc02/scripts/node-verify.bash)"
+after_success:
+- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/1ec050bc004d0e2161cb5286c247850d24aecc02/scripts/surge.bash)"
+- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/1ec050bc004d0e2161cb5286c247850d24aecc02/scripts/node-publish.bash)"
+notifications:
+  slack:
+    secure: TgZYbKVm44Zmieof25eHy3q7ENnauzhb4xWXfcxYgXZhB7cT/Sw/qjSFfwr+qcgGwkewTda0bLjC1Evr+u50JCWVebU3umq1Fjh24Ho9CdMYcDE30PuoT+YKN9yav+/qHXGH8LuZgtuSY84SPj7jjqwEEWsC0E3ecwwVZO7FhTEw1nGfN+dyLxhHrlJdm+RaIwXAgEc+UsmFRVj2C2/k57ye3kqwrSRate7KBbJNy+hq0EfRAwQNmNb8lImaQ7tcTOK7KBKCEDZuTV5A/vyqtkPkEYwfKlq2GlIolX7kBk3+MaQ2zI9Nmofy4xfpebbfd1R/x7zCU60btarXuwHlHP8qwZl4KzZvbHhLbnZ/jChXlWatRVbO4/N6KFURfAHvbI78cgSKDqbUDQSKAjd8FtmiUl7bpXlCqbHlqje+Jr+JUUJdkDQROaNYIgPU3bOISAbL1dE7YdBqsYcfmKC6mp0jOcjv9Mp726Ip+NPWsoXRfU1LlTJTGmEUUAtJEGR/R52M4JhZEK1kcc414vvZWuK1Izy17/ljRDrqOYl1p+nEEXp/OIKtIoSvlDoh5lMDDKLsN/DBSIVZGfcwj/iiVXEWJnAGkLvAUJosvKbRW3C5n45maWga9oe+nPBJFGxLC1S1DQMXuwta2eVDWQKAZDkZNapjzgr31uJW8v3kFG0=
+  email:
+    recipients:
+      secure: SZgtJdNIixZeegZPJwlmqeNbRxbCtAoloY6YLduzjwPLUrpaM/Kj+FOqZbBKqhF/6egvBQAiDnHrs82ZH3DQiCbpaXmWM6qBcV5j477vmRVK1Ddw0jRAhqqt2tsYB8reC3Z3pqn/ajOTBm7ONXUzpv4/9qmqvNl3yZ610gr/9FMqb41Cc9A7t25MpFtYxhbCRgrPZMioVzrIX+8fg1dN1MO8ixYmI+dexMEGv9LLhA7fovTuD/7a9gY/ohtfOD6sS8ohYwtjvVfLboophticDVJK0LG1dHAoCb2l4VmqE/9NQegvnrB7o6o0Ca9srikzxE9Hoa0NTZ/iXYJXLiQLik8DIg1pNsp0kaiUck0+Ziym8L2o0yRubFweVwv3d78jF62i+mtz0dRtUpOtv7GpEfO1UOCPuhZB0iqzLVfv3mU+Nk6EVYiWCkU+kWHlaAmuiHfyKvO1wX/Npia2fTuRS5l+23A+mnGN85XtWSSDMtZ7e1bnRc607bLFDvqMVVxj26BGP68f3Z9zLplzJeKRu2o9F5dXDtXD3UP3lZyVhFQXqCryD7KRgj40/GVPdfizpQVMjJJ0B+lfNvn8497w4OXBdG7jXUx1Hq8Lp7f5h5Z3z3D3MIv73GQgTURJLpo/JPZ3IQWRSh7nZnmecpLeZfA7wMc1+Wd0hVTA21et0Vs=

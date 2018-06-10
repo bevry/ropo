@@ -17,8 +17,9 @@ function extractAttribute (attributes, attribute) {
 function replaceElement (html, search, replace) {
 	const regex = new RegExp(`<(${search}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, 'ig')
 	const result = html.replace(regex, function (outerHTML, element, attributes, innerHTML) {
-		innerHTML = replaceElement(innerHTML, search, replace)
-		return replace(outerHTML, element, attributes, innerHTML)
+		const bubbleResult = replaceElement(innerHTML, search, replace)
+		const innerResult = replace(element, attributes, bubbleResult)
+		return innerResult
 	})
 	return result
 }
@@ -27,32 +28,14 @@ function replaceElement (html, search, replace) {
 // replaceElementCallback(outerHTML, element, attributes, innerHTML, replaceElementCompleteCallback), replaceElementCompleteCallback(err,replaceElementResult)
 // next(err,result)
 async function replaceElementAsync (html, search, replace) {
-	const codes = new Map()
-	const tasks = []
-
-	let rollingResult = replaceElement(html, search, function (...args) {
-		const code = '[async:' + Math.random() + ']'
-		const task = replace(...args).then((result) => codes.set(code, result))
-		tasks.push(task)
-		return code
-	})
-
-	await Promise.all(tasks)
-
-	function iterator (result, code) {
-		console.log({ code, result, rollingResult })
-		if (rollingResult.indexOf(code) !== -1) {
-			rollingResult = rollingResult.replace(code, result)
-			codes.delete(code)
-		}
-	}
-
-	while (codes.size) {
-		codes.forEach(iterator)
-	}
-
-	// Return
-	return Promise.resolve(rollingResult)
+	const regex = new RegExp(`<(${search}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, 'i')
+	const match = html.match(regex)
+	if (!match) return Promise.resolve(html)
+	const [outerHTML, element, attributes, innerHTML] = match
+	const bubbleResult = await replaceElementAsync(innerHTML, search, replace)
+	const innerResult = await replace(element, attributes, bubbleResult)
+	const result = match.input.replace(outerHTML, innerResult)
+	return await replaceElementAsync(result, search, replace)
 }
 
 module.exports = { extractAttribute, replaceElement, replaceElementAsync }

@@ -71,7 +71,7 @@ Let's say we want to create a HTML element to capitalise everything inside it. L
 
 To accomplish this, we would do the following:
 
-<x-example>
+<!-- <x-example> -->
 ``` js
 'use strict'
 
@@ -145,9 +145,8 @@ async function asyncExample () {
 	// => the output of package.json
 }
 asyncExample()
-
 ```
-</x-example>
+<!-- </x-example> -->
 
 
 <!-- HISTORY/ -->

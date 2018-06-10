@@ -1,3 +1,4 @@
+/* eslint no-invalid-regexp:0 */
 'use strict'
 
 const { isRegExp } = require('typechecker')
@@ -87,3 +88,50 @@ async function replaceElementAsync (html, search, replace) {
 }
 
 module.exports = { extractAttribute, replaceElement, replaceElementAsync }
+
+/**
+ * Replaces each iteration of the element with the result of the replace function, which should return a promise
+ * @param {string} source - the source string to replace elements within
+ * @param {string|regexp} regex - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
+ * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @returns {Promise<string>}
+ */
+async function replaceAsync (source, regex, replace) {
+	const match = source.match(regex)
+	console.log(match)
+	if (!match) return source
+	const outer = match.groups.outer || match[0]
+	const inner = match.groups.inner
+	const bubbleResult = await replaceAsync(inner, regex, replace)
+	let innerResult = await replace(match.groups, bubbleResult)
+	if (innerResult == null) {
+		innerResult = bubbleResult
+	}
+	const result = match.input.replace(outer, innerResult)
+	return await replaceAsync(result, regex, replace)
+}
+
+/**
+ * Replaces each iteration of the element with the result of the replace function, which should return a promise
+ * @param {string} source - the source string to replace elements within
+ * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @returns {Promise<string>}
+ */
+async function replaceHTMLElementsAsync (source, replace) {
+	const regex = new RegExp('<(?<element>[-a-z]+)(?<attributes> +[^>]+)?>(?<inner>[\\s\\S]+?)<\\/\\1>')
+	return await replaceAsync(source, regex, replace)
+}
+
+/**
+ * Replaces each iteration of the element with the result of the replace function, which should return a promise
+ * @param {string} source - the source string to replace elements within
+ * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @returns {Promise<string>}
+ */
+async function replaceCommentElementsAsync (source, replace) {
+	// don't code it directly, as eslint will fail, as it does not yet support regex groups
+	const regex = new RegExp('<!-- <(?<element>[-a-z]+)(?<attributes> +[^>]+)?> -->(?<inner>[\\s\\S]+?)<!-- <\\/\\1> -->')
+	return await replaceAsync(source, regex, replace)
+}
+
+module.exports = { extractAttribute, replaceElement, replaceElementAsync, replaceHTMLElementsAsync, replaceCommentElementsAsync }

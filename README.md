@@ -53,9 +53,8 @@ Replace each occurrence of a specified HTML element with another string
 
 <p>This package is published with the following editions:</p>
 
-<ul><li><code>replace-html-element</code> aliases <code>replace-html-element/index.js</code> which uses <a href="https://github.com/bevry/editions" title="Editions are the best way to produce and consume packages you care about.">Editions</a> to automatically select the correct edition for the consumers environment</li>
-<li><code>replace-html-element/source/index.js</code> is Source + <a href="https://babeljs.io/docs/learn-es2015/" title="ECMAScript Next">ESNext</a> + <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a></li>
-<li><code>replace-html-element/es2015/index.js</code> is <a href="https://babeljs.io" title="The compiler for writing next generation JavaScript">Babel</a> Compiled + <a href="http://babeljs.io/docs/plugins/preset-es2015/" title="ECMAScript 2015">ES2015</a> + <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a></li></ul>
+<ul><li><code>replace-html-element</code> aliases <code>replace-html-element/source/index.js</code></li>
+<li><code>replace-html-element/source/index.js</code> is Source + <a href="https://babeljs.io/docs/learn-es2015/" title="ECMAScript Next">ESNext</a> + <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a></li></ul>
 
 <p>Older environments may need <a href="https://babeljs.io/docs/usage/polyfill/" title="A polyfill that emulates missing ECMAScript environment features">Babel's Polyfill</a> or something similar.</p>
 
@@ -72,19 +71,81 @@ Let's say we want to create a HTML element to capitalise everything inside it. L
 
 To accomplish this, we would do the following:
 
-<x-example file="example.js">
+<x-example>
 ``` js
-const {replaceElement} = require('replace-html-element')
+'use strict'
 
+const { extractAttribute, replaceElement, replaceElementAsync } = require('replace-html-element')
+
+// uppercase the contents of <x-uppercase>
 console.log(
-    replaceElement(
-        `<strong>I am <x-uppercase>awesome</x-uppercase></strong>`,
-        'x-uppercase',
-        function (element, attributes, content) {
-            return content.toUpperCase()
-        }
-    )
+	replaceElement(
+		'<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
+		'x-uppercase',
+		function (element, attributes, content) {
+			return content.toUpperCase()
+		}
+	)
 )
+// => <strong>I am AWESOME</strong>
+
+// power the numbers of <power> together
+console.log(
+	replaceElement(
+		'<x-pow>2 <x-power>3 4</x-power> 5</x-pow>',
+		'x-pow(?:er)?',
+		function (element, attributes, content) {
+			const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+			return result
+		}
+	)
+)
+// => 8.263199609878108e+121
+// note that this is the correct result of: 2 ^ (3 ^ 4) ^ 5
+// which means, the nested element is replaced first, then the parent element, as expected
+
+// now as replace-element is just regex based, we must ensure that nested elements have unique tags
+// this can be done as above with `x-pow` and `x-power`, but can also be done via a `:<N>` suffix to the tag
+console.log(
+	replaceElement(
+		'<x-pow:1>2 <x-pow:2>3 4</x-pow:2> 5</x-pow:1>',
+		'x-pow',
+		function (element, attributes, content) {
+			const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+			return result
+		}
+	)
+)
+// => 8.263199609878108e+121
+
+// we can even fetch attributes
+console.log(
+	replaceElement(
+		'<x-pow power=10>2</x-pow>',
+		'x-pow',
+		function (element, attributes, content) {
+			const power = extractAttribute(attributes, 'power')
+			const result = Math.pow(content, power)
+			return result
+		}
+	)
+)
+// => 1024
+
+// and even do asynchronous replacements
+async function asyncExample () {
+	const result = await replaceElementAsync(
+		'<x-readfile>package.json</x-readfile>',
+		'x-readfile',
+		function (element, attributes, content) {
+			return require('fs').promises.readFile(content, 'utf8')
+		}
+	)
+	console.log(result)
+	// => the output of package.json
+}
+asyncExample()
+
 ```
 </x-example>
 

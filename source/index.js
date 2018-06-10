@@ -1,5 +1,7 @@
 'use strict'
 
+const { isRegExp } = require('typechecker')
+
 /**
  * Returns the value of a specific attribute
  * @param {string} attributes - the string of attributes to fetch from
@@ -29,12 +31,21 @@ function extractAttribute (attributes, attribute) {
 /**
  * Replaces each iteration of the element with the result of the replace function
  * @param {string} html - the source string to replace elements within
- * @param {string} search - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
+ * @param {string|regexp} search - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
  * @param {replaceElement~replaceCallback} replace - the callback to perform the replacement
  * @returns {string}
  */
 function replaceElement (html, search, replace) {
-	const regex = new RegExp(`<(${search}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, 'ig')
+	let searchFlags = 'g', searchSource = search
+	if (isRegExp(search)) {
+		searchFlags = [...new Set(
+			searchFlags.split('').concat(
+				search.flags.split('')
+			)
+		)].join('')
+		searchSource = search.source
+	}
+	const regex = new RegExp(`<(${searchSource}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, searchFlags)
 	const result = html.replace(regex, function (outerHTML, element, attributes, innerHTML) {
 		const bubbleResult = replaceElement(innerHTML, search, replace)
 		const innerResult = replace(element, attributes, bubbleResult)
@@ -55,12 +66,17 @@ function replaceElement (html, search, replace) {
 /**
  * Replaces each iteration of the element with the result of the replace function, which should return a promise
  * @param {string} html - the source string to replace elements within
- * @param {string} search - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
+ * @param {string|regexp} search - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
  * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
  * @returns {Promise<string>}
  */
 async function replaceElementAsync (html, search, replace) {
-	const regex = new RegExp(`<(${search}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, 'i')
+	let searchFlags = '', searchSource = search
+	if (isRegExp(search)) {
+		searchFlags = search.flags
+		searchSource = search.source
+	}
+	const regex = new RegExp(`<(${searchSource}(?:\\:[-:_a-z0-9]+)?)(\\s+[^>]+)?>([\\s\\S]+?)<\\/\\1>`, searchFlags)
 	const match = html.match(regex)
 	if (!match) return html
 	const [outerHTML, element, attributes, innerHTML] = match

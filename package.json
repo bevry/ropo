@@ -44,7 +44,9 @@
   },
   "author": "2018+ Benjamin Lupton <b@lupton.cc>",
   "maintainers": [],
-  "contributors": [],
+  "contributors": [
+    "Benjamin Lupton (http://balupton.com)"
+  ],
   "bugs": {
     "url": "https://github.com/bevry/replace-html-element/issues"
   },

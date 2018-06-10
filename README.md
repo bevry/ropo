@@ -63,9 +63,9 @@ Replace each occurrence of a specified HTML element with another string
 
 ## Usage
 
-[Documentation.](http://master.detect-indentation.bevry.surge.sh/docs/)
+[Documentation.](http://master.replace-html-element.bevry.surge.sh/docs/)
 
-[Tests.](https://github.com/bevry/detect-indentation/blob/master/source/test.js)
+[Tests.](https://github.com/bevry/replace-html-element/blob/master/source/test.js)
 
 Let's say we want to create a HTML element to capitalise everything inside it. Let's call it `<x-uppercase>`.
 
@@ -200,7 +200,9 @@ No sponsors yet! Will you be the first?
 
 <h3>Contributors</h3>
 
-No contributors yet! Will you be the first?
+These amazing people have contributed code to this project:
+
+<ul><li><a href="http://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/replace-html-element/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/replace-html-element">view contributions</a></li></ul>
 
 <a href="https://github.com/bevry/replace-html-element/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
 

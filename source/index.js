@@ -83,7 +83,7 @@ function replaceElementSync (source, search, replace) {
  * Replaces each iteration of the element with the result of the replace function, which should return a promise
  * @param {string} source - the source string to replace elements within
  * @param {string|regexp} regex - the element tag to search for and replace, supports regex, e.g. `(?:x-)?uppercase`
- * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @param {replaceAsyncCallback} replace - the callback to perform the replacement
  * @returns {Promise<string>}
  */
 async function replaceAsync (source, regex, replace) {
@@ -105,7 +105,7 @@ async function replaceAsync (source, regex, replace) {
  * Replaces each iteration of the element with the result of the replace function, which should return a promise
  * @param {string} source - the source string to replace elements within
  * @param {string|regex} element - the regex string/instance for finding the element
- * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @param {replaceAsyncCallback} replace - the callback to perform the replacement
  * @returns {Promise<string>}
  */
 async function replaceElementAsync (source, element, replace) {
@@ -125,7 +125,7 @@ async function replaceElementAsync (source, element, replace) {
 /**
  * Replaces each iteration of the element with the result of the replace function, which should return a promise
  * @param {string} source - the source string to replace elements within
- * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @param {replaceAsyncCallback} replace - the callback to perform the replacement
  * @returns {Promise<string>}
  */
 async function replaceElementsAsync (source, replace) {
@@ -136,7 +136,7 @@ async function replaceElementsAsync (source, replace) {
 /**
  * Replaces each iteration of the element with the result of the replace function, which should return a promise
  * @param {string} source - the source string to replace elements within
- * @param {replaceElementAsync~replaceCallback} replace - the callback to perform the replacement
+ * @param {replaceAsyncCallback} replace - the callback to perform the replacement
  * @returns {Promise<string>}
  */
 async function replaceCommentElementsAsync (source, replace) {

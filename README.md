@@ -64,6 +64,31 @@ Replace each occurrence of a specified HTML element with another string
 
 ## Usage
 
+[Documentation.](http://master.detect-indentation.bevry.surge.sh/docs/)
+
+[Tests.](https://github.com/bevry/detect-indentation/blob/master/source/test.js)
+
+Let's say we want to create a HTML element to capitalise everything inside it. Let's call it `<x-uppercase>`.
+
+To accomplish this, we would do the following:
+
+<x-example file="example.js">
+``` js
+const {replaceElement} = require('replace-html-element')
+
+console.log(
+    replaceElement(
+        `<strong>I am <x-uppercase>awesome</x-uppercase></strong>`,
+        'x-uppercase',
+        function (element, attributes, content) {
+            return content.toUpperCase()
+        }
+    )
+)
+```
+</x-example>
+
+
 <!-- HISTORY/ -->
 
 <h2>History</h2>

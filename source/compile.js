@@ -20,13 +20,13 @@ async function main () {
 			const result = [
 				`<!-- <${element.toUpperCase() + attr}> -->`,
 				'``` js',
-				source.replace("require('./')", `require('${name}')`).trim(),
+				source.replace("require('./')", `require('${name}')`).trim().replace(/\t/g, '    '),
 				'```',
 				'',
 				'Which results in:',
 				'',
 				'```',
-				output.toString().trim(),
+				output.toString().trim().replace(/\t/g, '    '),
 				'```',
 				`<!-- </${element.toUpperCase()}> -->`
 			].join('\n')

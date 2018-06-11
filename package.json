@@ -1,8 +1,8 @@
 {
-  "name": "replace-html-element",
+  "name": "ropo",
   "version": "0.1.0",
   "description": "Replace each occurrence of a specified HTML element with another string",
-  "homepage": "https://github.com/bevry/replace-html-element",
+  "homepage": "https://github.com/bevry/ropo",
   "license": "MIT",
   "keywords": [
     "replace",
@@ -48,11 +48,11 @@
     "Benjamin Lupton (http://balupton.com)"
   ],
   "bugs": {
-    "url": "https://github.com/bevry/replace-html-element/issues"
+    "url": "https://github.com/bevry/ropo/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bevry/replace-html-element.git"
+    "url": "https://github.com/bevry/ropo.git"
   },
   "engines": {
     "node": ">=8"

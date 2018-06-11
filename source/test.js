@@ -3,7 +3,7 @@
 
 const { equal } = require('assert-helpers')
 const joe = require('joe')
-const { replaceElementSync, replaceElementAsync } = require('./')
+const { extractAttribute, replaceElementSync, replaceElementAsync } = require('./')
 
 // ------------------------------------
 // Helpers
@@ -27,22 +27,31 @@ function trimIndentation (input) {
 // ------------------------------------
 // Tests
 
-const num1 = Math.pow(
-	Math.pow(2,
-		Math.pow(3, 4)
+const powerResult = Math.pow(
+	Math.pow(1.1,
+		Math.pow(2.1, 2.2)
 	),
-	5
-)
-const num2 = Math.pow(
-	Math.pow(6,
-		Math.pow(7, 8)
-	),
-	9
+	1.2
 )
 
-const tests = [
+const powerAttributesResult = Math.pow(
+	Math.pow(
+		Math.pow(
+			2.1,
+			Math.pow(
+				3.2,
+				3.1
+			)
+		),
+		2.2
+	),
+	1.1
+)
+
+const replaceElementTests = [
 	{
-		search: /uc|uppercase/,
+		name: 'uppercase',
+		element: /uc|uppercase/,
 		source: `
 			breakfast
 			<title>blah</title>
@@ -80,11 +89,10 @@ const tests = [
 		}
 	},
 	{
-		search: /in|invert/,
+		name: 'invert',
+		element: /in|invert/,
 		source: `
-			breakfast
-			<title>blah</title>
-			brunch
+			begin
 			<in>
 				one
 					<invert>
@@ -92,65 +100,51 @@ const tests = [
 					</invert>
 				three
 			</in>
-			lunch
-			<in>
-				four
-					<invert>
-						five
-					</invert>
-				six
-			</in>
-			dinner`.replace(/^\t{3}/gm, '').trim(),
+			end`.replace(/^\t{3}/gm, '').trim(),
 		expected: `
-			breakfast
-			<title>blah</title>
-			brunch
+			begin
 			eno
 			two\t
 			eerht
-			lunch
-			ruof
-			five\t
-			xis
-			dinner`.replace(/^\t{3}/gm, '').trim(),
+			end`.replace(/^\t{3}/gm, '').trim(),
 		replace (match, content) {
 			return trimIndentation(content).split('\n').map((line) => line.split('').reverse().join('')).join('\n')
 		}
 	},
 	{
-		search: /pow|power/,
+		name: 'power',
+		element: /pow|power/,
 		source: `
-			breakfast
-			<title>blah</title>
-			brunch
 			<pow>
-				2
+				1.1
 					<power>
-						3
-						4
+						2.1
+						2.2
 					</power>
-				5
-			</pow>
-			lunch
-			<pow>
-				6
-					<power>
-						7
-						8
-					</power>
-				9
-			</pow>
-			dinner`.replace(/^\t{3}/gm, '').trim(),
-		expected: `
-			breakfast
-			<title>blah</title>
-			brunch
-			${num1}
-			lunch
-			${num2}
-			dinner`.replace(/^\t{3}/gm, '').trim(),
+				1.2
+			</pow>`.replace(/^\t{3}/gm, '').trim(),
+		expected: powerResult,
 		replace (match, content) {
 			return trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+		}
+	},
+	{
+		name: 'power with attributes',
+		element: /pow|power/,
+		source: `
+			<pow y=1.1>
+				2.1
+					<power y=3.1>
+						3.2
+					</power>
+				2.2
+			</pow>`.replace(/^\t{3}/gm, '').trim(),
+		expected: powerAttributesResult,
+		replace ({ attributes }, content) {
+			const y = extractAttribute(attributes, 'y')
+			const x = trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+			const z = Math.pow(x, y)
+			return z
 		}
 	}
 ]
@@ -158,24 +152,26 @@ const tests = [
 // ------------------------------------
 // Tests
 
-joe.suite('replace-html-element', function (suite) {
-	tests.forEach(function ({ search, source, expected, replace }) {
-		suite(search.source, function (suite, test) {
-			test('replaceElement', function () {
-				const actual = replaceElementSync(source, search, replace)
-				equal(actual, expected)
-			})
-			test('replaceElementAsync', function (done) {
-				replaceElementAsync(source, search, function (...args) {
-					return new Promise(function (resolve) {
-						process.nextTick(function () {
-							const result = replace(...args)
-							resolve(result)
-						})
-					})
-				}).catch(done).then((actual) => {
+joe.suite('ropo', function (suite) {
+	suite('replaceElementTests', function (suite) {
+		replaceElementTests.forEach(function ({ name, element, source, expected, replace }) {
+			suite(name, function (suite, test) {
+				test('replaceElementSync', function () {
+					const actual = replaceElementSync(source, element, replace)
 					equal(actual, expected)
-					done()
+				})
+				test('replaceElementAsync', function (done) {
+					replaceElementAsync(source, element, function (...args) {
+						return new Promise(function (resolve) {
+							process.nextTick(function () {
+								const result = replace(...args)
+								resolve(result)
+							})
+						})
+					}).catch(done).then((actual) => {
+						equal(actual, expected)
+						done()
+					})
 				})
 			})
 		})

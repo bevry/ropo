@@ -67,94 +67,266 @@ Replace each occurrence of a specified HTML element with another string
 
 [Tests.](https://github.com/bevry/ropo/blob/master/source/test.js)
 
-Let's say we want to create a HTML element to capitalise everything inside it. Let's call it `<x-uppercase>`.
-
-To accomplish this, we would do the following:
-
 <!-- <x-example> -->
 ``` js
 'use strict'
 
-const { extractAttribute, replaceElementSync, replaceElementAsync } = require('ropo')
+const { extractAttribute, replaceSync, replaceAsync, replaceElementSync, replaceElementAsync } = require('ropo')
 
-// uppercase the contents of <x-uppercase>
-console.log(
-	replaceElementSync(
-		'<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
-		'x-uppercase',
-		function (match, content) {
-			return content.toUpperCase()
-		}
+async function main () {
+	// uppercase `bc` of `abcd`
+	console.log(
+		replaceSync(
+			'abcd',
+			'bc',
+			function (match, content) {
+				return content.toUpperCase()
+			}
+		)
 	)
-)
-// => <strong>I am AWESOME</strong>
+	// => aBCd
 
-// power the numbers of <power> together
-console.log(
-	replaceElementSync(
-		'<x-pow>2 <x-power>3 4</x-power> 5</x-pow>',
-		/x-pow(?:er)?/,
-		function (match, content) {
-			const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
-			return result
-		}
+	// uppercase `bc` of `abcd` asynchronously
+	console.log(
+		await replaceAsync(
+			'abcd',
+			'bc',
+			function (match, content) {
+				return new Promise(function (resolve) {
+					process.nextTick(function () {
+						resolve(
+							content.toUpperCase()
+						)
+					})
+				})
+			}
+		)
 	)
-)
-// => 8.263199609878108e+121
-// note that this is the correct result of: 2 ^ (3 ^ 4) ^ 5
-// which means, the nested element is replaced first, then the parent element, as expected
+	// => aBCd
 
-// now as replace-element is just regex based, we must ensure that nested elements have unique tags
-// this can be done as above with `x-pow` and `x-power`, but can also be done via a `:<N>` suffix to the tag
-console.log(
-	replaceElementSync(
-		'<x-pow>2 <x-pow:2>3 4</x-pow:2> 5</x-pow>',
-		/x-pow(?::\d+)?/,
-		function (match, content) {
-			const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
-			return result
-		}
-	)
-)
-// => 8.263199609878108e+121
+	// use RegExp named capture groups to swap two words
+	// https://github.com/tc39/proposal-regexp-named-groups
+	console.log(
+		replaceSync(
+			'hello world',
+			new RegExp('^(?<first>\\w+) (?<second>\\w+)
 
-// we can even fetch attributes
-console.log(
-	replaceElementSync(
-		'<x-pow power=10>2</x-pow>',
-		'x-pow',
-		function ({ attributes }, content) {
-			const power = extractAttribute(attributes, 'power')
-			const result = Math.pow(content, power)
-			return result
-		}
-	)
-)
-// => 1024
 
-// and even do asynchronous replacements
-async function asyncExample () {
-	const result = await replaceElementAsync(
-		'<x-readfile>index.js</x-readfile>',
-		'x-readfile',
-		function (match, content) {
-			return require('fs').promises.readFile(content, 'utf8')
-		}
+<!-- HISTORY/ -->
+
+<h2>History</h2>
+
+<a href="https://github.com/bevry/ropo/blob/master/HISTORY.md#files">Discover the release history by heading on over to the <code>HISTORY.md</code> file.</a>
+
+<!-- /HISTORY -->
+
+
+<!-- CONTRIBUTE/ -->
+
+<h2>Contribute</h2>
+
+<a href="https://github.com/bevry/ropo/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
+
+<!-- /CONTRIBUTE -->
+
+
+<!-- BACKERS/ -->
+
+<h2>Backers</h2>
+
+<h3>Maintainers</h3>
+
+No maintainers yet! Will you be the first?
+
+<h3>Sponsors</h3>
+
+No sponsors yet! Will you be the first?
+
+<span class="badge-patreon"><a href="https://patreon.com/bevry" title="Donate to this project using Patreon"><img src="https://img.shields.io/badge/patreon-donate-yellow.svg" alt="Patreon donate button" /></a></span>
+<span class="badge-opencollective"><a href="https://opencollective.com/bevry" title="Donate to this project using Open Collective"><img src="https://img.shields.io/badge/open%20collective-donate-yellow.svg" alt="Open Collective donate button" /></a></span>
+<span class="badge-flattr"><a href="https://flattr.com/profile/balupton" title="Donate to this project using Flattr"><img src="https://img.shields.io/badge/flattr-donate-yellow.svg" alt="Flattr donate button" /></a></span>
+<span class="badge-paypal"><a href="https://bevry.me/paypal" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPal donate button" /></a></span>
+<span class="badge-bitcoin"><a href="https://bevry.me/bitcoin" title="Donate once-off to this project using Bitcoin"><img src="https://img.shields.io/badge/bitcoin-donate-yellow.svg" alt="Bitcoin donate button" /></a></span>
+<span class="badge-wishlist"><a href="https://bevry.me/wishlist" title="Buy an item on our wishlist for us"><img src="https://img.shields.io/badge/wishlist-donate-yellow.svg" alt="Wishlist browse button" /></a></span>
+
+<h3>Contributors</h3>
+
+These amazing people have contributed code to this project:
+
+<ul><li><a href="http://balupton.com">Benjamin Lupton</a> — <a href="https://github.com/bevry/ropo/commits?author=balupton" title="View the GitHub contributions of Benjamin Lupton on repository bevry/ropo">view contributions</a></li></ul>
+
+<a href="https://github.com/bevry/ropo/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
+
+<!-- /BACKERS -->
+
+
+<!-- LICENSE/ -->
+
+<h2>License</h2>
+
+Unless stated otherwise all works are:
+
+<ul><li>Copyright &copy; 2018+ Benjamin Lupton</li></ul>
+
+and licensed under:
+
+<ul><li><a href="http://spdx.org/licenses/MIT.html">MIT License</a></li></ul>
+
+<!-- /LICENSE -->
+
+
+),
+			function ({ first, second }) {
+				return second + ' ' + first
+			}
+		)
 	)
-	console.log(result)
-	// => the output of index.js
+	// => world hello
+	// yes, doing content.split(' ').reverse().join('') would have also worked
+	// but now you know what RegExp named capture groups are and how to use them
+	// which will come into play in the following examples
+
+	// invert anything between BEGIN and END
+	console.log(
+		replaceSync(
+			'hello BEGIN good morning END world',
+			new RegExp('BEGIN (?<inner>.+?) END'),
+			function (match, content) {
+				// match.inner === content
+				return content.split('').reverse().join('')
+			}
+		)
+	)
+	// => hello gninrom doog world
+
+	// invert anything between INVERT:<N>
+	console.log(
+		replaceSync(
+			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
+			new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
+			function (match, content) {
+				// match.inner === content
+				return content.split('').reverse().join('')
+			}
+		)
+	)
+	// => hello gninrom guten yadg morgen doog world
+	// notice how the text is replaced correctly, gday has 3 inversions applied, so it is inverted
+	// whereas guten morgen has 2 inversions applied, so is reset
+	// the ability to perform this recursive replacement is possible by using a RegExp named capture group called `inner` with ropo
+	// when inner is provided, ropo will perform recursion on inner
+	// e.g. using inner, the initial recursion will occur on the content: good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning
+	// then on: guten INVERT:3 gday /INVERT:3 morgen
+	// and finally on: gday
+	// without inner, recursion would have to happen on the outer, which would cause the replacement to recur infinitely against itself
+	// e.g. the intiial recursion would occur on: INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1
+	// and the second on: INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1
+	// and the third on: INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1
+	// and so on, so no progress is made
+	// as such, ropo will only allow recursion when it detects the `inner` named capture group
+
+	// invert anything between INVERT:<N>, without using the `inner` named capture group
+	console.log(
+		replaceSync(
+			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
+			new RegExp('(?<element>INVERT:\\d+) (?<content>.+?) /\\k<element>'),
+			function ({ content }) {
+				return content.split('').reverse().join('')
+			}
+		)
+	)
+	// => hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
+	// as we can see, recursion was correctly, disabled
+	// if it wasn't, we would end up with an error like:
+	// (node:7252) UnhandledPromiseRejectionWarning: RangeError: Maximum call stack size exceeded
+	// the second argument to the replace function, which is ommitted in the above example
+	// would now be the outer match content, instead of the inner match content
+	// if we replaced it, then we would end up with
+	// => hello 1:TREVNI/ gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog 1:TREVNI world
+
+	// uppercase the contents of <x-uppercase>
+	console.log(
+		replaceElementSync(
+			'<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
+			'x-uppercase',
+			function (match, content) {
+				return content.toUpperCase()
+			}
+		)
+	)
+	// => <strong>I am AWESOME</strong>
+
+	// power the numbers of <power> together
+	console.log(
+		replaceElementSync(
+			'<x-pow>2 <x-power>3 4</x-power> 5</x-pow>',
+			/x-pow(?:er)?/,
+			function (match, content) {
+				const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+				return result
+			}
+		)
+	)
+	// => 8.263199609878108e+121
+	// note that this is the correct result of: 2 ^ (3 ^ 4) ^ 5
+	// which means, the nested element is replaced first, then the parent element, as expected
+
+	// now as replace-element is just regex based, we must ensure that nested elements have unique tags
+	// this can be done as above with `x-pow` and `x-power`, but can also be done via a `:<N>` suffix to the tag
+	console.log(
+		replaceElementSync(
+			'<x-pow>2 <x-pow:2>3 4</x-pow:2> 5</x-pow>',
+			/x-pow(?::\d+)?/,
+			function (match, content) {
+				const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+				return result
+			}
+		)
+	)
+	// => 8.263199609878108e+121
+
+	// we can even fetch attributes
+	console.log(
+		replaceElementSync(
+			'<x-pow power=10>2</x-pow>',
+			'x-pow',
+			function ({ attributes }, content) {
+				const power = extractAttribute(attributes, 'power')
+				const result = Math.pow(content, power)
+				return result
+			}
+		)
+	)
+	// => 1024
+
+	// and even do asynchronous replacements
+	console.log(
+		await replaceElementAsync(
+			'<x-readfile>example.txt</x-readfile>',
+			'x-readfile',
+			function (match, content) {
+				return require('fs').promises.readFile(content, 'utf8')
+			}
+		)
+	)
+	// => hello world from example.txt
+
 }
-asyncExample()
+main()
 ```
 results in:
 ```
+aBCd
+aBCd
+world hello
+hello gninrom doog world
+hello gninrom guten yadg morgen doog world
+hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
 <strong>I am AWESOME</strong>
 8.263199609878108e+121
 8.263199609878108e+121
 1024
-'use strict'
-
-module.exports = require('editions').requirePackage(__dirname, require)
+hello world from example.txt
 ```
 <!-- </x-example> -->
 

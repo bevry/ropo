@@ -5,6 +5,10 @@ const { equal } = require('assert-helpers')
 const joe = require('joe')
 const { extractAttribute, replaceElementSync, replaceElementAsync } = require('./')
 
+const spawn = require('await-spawn')
+const pathUtil = require('path')
+const root = pathUtil.join(__dirname, '..')
+
 // ------------------------------------
 // Helpers
 
@@ -152,7 +156,7 @@ const replaceElementTests = [
 // ------------------------------------
 // Tests
 
-joe.suite('ropo', function (suite) {
+joe.suite('ropo', function (suite, test) {
 	suite('replaceElementTests', function (suite) {
 		replaceElementTests.forEach(function ({ name, element, source, expected, replace }) {
 			suite(name, function (suite, test) {
@@ -175,5 +179,28 @@ joe.suite('ropo', function (suite) {
 				})
 			})
 		})
+	})
+
+	test('example', function (done) {
+		const expected = `aBCd
+		aBCd
+		world hello
+		hello gninrom doog world
+		hello gninrom guten yadg morgen doog world
+		hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
+		<strong>I am AWESOME</strong>
+		8.263199609878108e+121
+		8.263199609878108e+121
+		1024
+		hello world from example.txt
+		`.replace(/^\t{2}/gm, '')
+
+		const path = pathUtil.join(root, 'example.js')
+		spawn('node', [path], { cwd: root })
+			.catch(done)
+			.then(function (stdout) {
+				equal(stdout.toString(), expected)
+				done()
+			})
 	})
 })

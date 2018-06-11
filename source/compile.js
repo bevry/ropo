@@ -1,9 +1,12 @@
 'use strict'
 
-const spawn = require('await-spawn')
 const { writeFile, readFile } = require('fs').promises
 const { extractAttribute, replaceCommentElementAsync } = require('./')
-const readmePath = require('path').join(__dirname, '..', 'README.md')
+
+const spawn = require('await-spawn')
+const pathUtil = require('path')
+const root = pathUtil.join(__dirname, '..')
+const readmePath = pathUtil.join(root, 'README.md')
 const name = require('../package.json').name
 
 // and even do asynchronous replacements
@@ -16,7 +19,8 @@ async function main () {
 			const file = extractAttribute(attributes, 'file') || 'example.js'
 			const source = await require('fs').promises.readFile(file, 'utf8')
 			const attr = file === 'example.js' ? '' : ` file="${file}"`
-			const output = await spawn('node', [file], { cwd: process.cwd() })
+			const path = pathUtil.join(root, file)
+			const output = (await spawn('node', [path], { cwd: root })).toString()
 			const result = [
 				`<!-- <${element.toUpperCase() + attr}> -->`,
 				'``` js',
@@ -26,7 +30,7 @@ async function main () {
 				'Which results in:',
 				'',
 				'```',
-				output.toString().trim().replace(/\t/g, '    '),
+				output.trim().replace(/\t/g, '    '),
 				'```',
 				`<!-- </${element.toUpperCase()}> -->`
 			].join('\n')

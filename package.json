@@ -1,7 +1,7 @@
 {
   "name": "ropo",
   "version": "0.1.0",
-  "description": "Replace each occurrence of a specified HTML element with another string",
+  "description": "String replacement utilities with support for both synchronous and asynchronous replacements. Supports replacing regular expressions, HTML Elements, and comment elements. Compatible with async/await.",
   "homepage": "https://github.com/bevry/ropo",
   "license": "MIT",
   "keywords": [
@@ -13,7 +13,12 @@
     "template",
     "render",
     "renderer",
-    "g"
+    "sync",
+    "async",
+    "asynchronous",
+    "await",
+    "promise",
+    "promised"
   ],
   "badges": {
     "list": [
@@ -55,7 +60,7 @@
     "url": "https://github.com/bevry/ropo.git"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "editions": [
     {

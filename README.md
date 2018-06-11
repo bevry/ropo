@@ -27,7 +27,7 @@
 
 <!-- DESCRIPTION/ -->
 
-Replace each occurrence of a specified HTML element with another string
+String replacement utilities with support for both synchronous and asynchronous replacements. Supports replacing regular expressions, HTML Elements, and comment elements. Compatible with async/await.
 
 <!-- /DESCRIPTION -->
 

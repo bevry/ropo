@@ -97,7 +97,8 @@
     "joe": "^2.0.2",
     "joe-reporter-console": "^2.0.1",
     "projectz": "^1.4.0",
-    "surge": "^0.20.1"
+    "surge": "^0.20.1",
+    "trim-indentation": "^1.0.0"
   },
   "scripts": {
     "our:setup": "npm run our:setup:npm",

@@ -4,29 +4,11 @@
 const { equal } = require('assert-helpers')
 const joe = require('joe')
 const { extractAttribute, replaceElementSync, replaceElementAsync } = require('./')
+const trimIndentation = require('trim-indentation')
 
 const spawn = require('await-spawn')
 const pathUtil = require('path')
 const root = pathUtil.join(__dirname, '..')
-
-// ------------------------------------
-// Helpers
-
-function trimIndentation (input) {
-	const source = input.replace(/^\n+|\s+$/g, '')
-	const match = source.match(/^[\x20\t]+/)
-	if (!match) return source
-	const indentation = match[0]
-	const result = source.split('\n').map((line) => {
-		if (line.indexOf(indentation) === 0) {
-			return line.substring(indentation.length)
-		}
-		else {
-			throw new Error('inconsitent indentation')
-		}
-	}).join('\n')
-	return result
-}
 
 // ------------------------------------
 // Tests

@@ -46,7 +46,7 @@ String replacement utilities with support for both synchronous and asynchronous 
 <a href="http://browserify.org" title="Browserify lets you require('modules') in the browser by bundling up all of your dependencies"><h3>Browserify</h3></a><ul>
 <li>Install: <code>npm install --save ropo</code></li>
 <li>Module: <code>require('ropo')</code></li>
-<li>CDN URL: <code>//wzrd.in/bundle/ropo@1.0.0</code></li></ul>
+<li>CDN URL: <code>//wzrd.in/bundle/ropo@1.1.0</code></li></ul>
 
 <a href="http://enderjs.com" title="Ender is a full featured package manager for your browser"><h3>Ender</h3></a><ul>
 <li>Install: <code>ender add ropo</code></li>
@@ -244,6 +244,21 @@ async function main () {
     )
     // => hello world from example.txt
 
+    // and with support for self-closing elements
+    console.log(
+        replaceElementSync(
+            '<x-pow x=2 y=3 /> <x-pow>4 6</x-pow>',
+            /x-pow/,
+            function (content, { attributes }) {
+                const x = extractAttribute(attributes, 'x') || content.split(' ')[0]
+                const y = extractAttribute(attributes, 'y') || content.split(' ')[1]
+                const result = Math.pow(x, y)
+                return result
+            }
+        )
+    )
+    // => 8 4096
+
 }
 main()
 ```
@@ -262,6 +277,7 @@ hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
 8.263199609878108e+121
 1024
 hello world from example.txt
+8 4096
 ```
 <!-- </x-example> -->
 

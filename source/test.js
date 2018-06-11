@@ -175,6 +175,7 @@ joe.suite('ropo', function (suite, test) {
 		8.263199609878108e+121
 		1024
 		hello world from example.txt
+		8 4096
 		`.replace(/^\t{2}/gm, '')
 
 		const path = pathUtil.join(root, 'example.js')

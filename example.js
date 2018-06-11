@@ -170,5 +170,20 @@ async function main () {
 	)
 	// => hello world from example.txt
 
+	// and with support for self-closing elements
+	console.log(
+		replaceElementSync(
+			'<x-pow x=2 y=3 /> <x-pow>4 6</x-pow>',
+			/x-pow/,
+			function (content, { attributes }) {
+				const x = extractAttribute(attributes, 'x') || content.split(' ')[0]
+				const y = extractAttribute(attributes, 'y') || content.split(' ')[1]
+				const result = Math.pow(x, y)
+				return result
+			}
+		)
+	)
+	// => 8 4096
+
 }
 main()

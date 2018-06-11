@@ -46,7 +46,7 @@ function prepareElementRegex (input, addFlags = '') {
  * @private
  * @type {RegExp}
  */
-const elementsRegex = new RegExp('<(?<element>[-a-z]+)(?<attributes> +[^>]+)?>(?<inner>[\\s\\S]+?)<\\/\\k<element>>')
+const elementsRegex = new RegExp('<(?<element>[-a-z]+)(?<attributes>\\s+.+?)?(?:\\/>|>(?<inner>[\\s\\S]+?)<\\/\\k<element>>)')
 
 /**
  * Get a regular expression for finding a particular element
@@ -57,7 +57,7 @@ const elementsRegex = new RegExp('<(?<element>[-a-z]+)(?<attributes> +[^>]+)?>(?
  */
 function getElementRegex (element, addFlags) {
 	const { source, flags } = prepareElementRegex(element, addFlags)
-	const regex = new RegExp(`<(?<element>${source})(?<attributes>\\s+[^>]+)?>(?<inner>[\\s\\S]+?)<\\/\\k<element>>`, flags)
+	const regex = new RegExp(`<(?<element>${source})(?<attributes>\\s+.+?)?(?:\\/>|>(?<inner>[\\s\\S]+?)<\\/\\k<element>>)`, flags)
 	return regex
 }
 
@@ -66,7 +66,7 @@ function getElementRegex (element, addFlags) {
  * @private
  * @type {RegExp}
  */
-const commentElementsRegex = new RegExp('<!-- <(?<element>[-a-z]+)(?<attributes> +[^>]+)?> -->(?<inner>[\\s\\S]+?)<!-- <\\/\\k<element>> -->')
+const commentElementsRegex = new RegExp('<!-- <(?<element>[-a-z]+)(?<attributes>\\s+.+?)?(?:\\/>|> -->(?<inner>[\\s\\S]+?)<!-- <\\/\\k<element>> -->)')
 
 /**
  * Get a regular expression for finding a particular element
@@ -77,7 +77,7 @@ const commentElementsRegex = new RegExp('<!-- <(?<element>[-a-z]+)(?<attributes>
  */
 function getCommentElementRegex (element, addFlags) {
 	const { source, flags } = prepareElementRegex(element, addFlags)
-	const regex = new RegExp(`<!-- <(?<element>${source})(?<attributes>\\s+[^>]+)?> -->(?<inner>[\\s\\S]+?)<!-- <\\/\\k<element>> -->`, flags)
+	const regex = new RegExp(`<!-- <(?<element>${source})(?<attributes>\\s+.+?)?(?:\\/>|> -->(?<inner>[\\s\\S]+?)<!-- <\\/\\k<element>> -->)`, flags)
 	return regex
 }
 

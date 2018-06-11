@@ -78,7 +78,7 @@ async function main () {
 	console.log(
 		replaceSync(
 			'abcd',
-			'bc',
+			/bc/,
 			function (match, content) {
 				return content.toUpperCase()
 			}
@@ -90,7 +90,7 @@ async function main () {
 	console.log(
 		await replaceAsync(
 			'abcd',
-			'bc',
+			/bc/,
 			function (match, content) {
 				return new Promise(function (resolve) {
 					process.nextTick(function () {
@@ -109,7 +109,7 @@ async function main () {
 	console.log(
 		replaceSync(
 			'hello world',
-			new RegExp('^(?<first>\\w+) (?<second>\\w+)'),
+			new RegExp('^(?<first>\\w+) (?<second>\\w+)$'),
 			function ({ first, second }) {
 				return second + ' ' + first
 			}
@@ -182,7 +182,7 @@ async function main () {
 	console.log(
 		replaceElementSync(
 			'<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
-			'x-uppercase',
+			/x-uppercase/,
 			function (match, content) {
 				return content.toUpperCase()
 			}
@@ -223,7 +223,7 @@ async function main () {
 	console.log(
 		replaceElementSync(
 			'<x-pow power=10>2</x-pow>',
-			'x-pow',
+			/x-pow/,
 			function ({ attributes }, content) {
 				const power = extractAttribute(attributes, 'power')
 				const result = Math.pow(content, power)
@@ -237,7 +237,7 @@ async function main () {
 	console.log(
 		await replaceElementAsync(
 			'<x-readfile>example.txt</x-readfile>',
-			'x-readfile',
+			/x-readfile/,
 			function (match, content) {
 				return require('fs').promises.readFile(content, 'utf8')
 			}

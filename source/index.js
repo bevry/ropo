@@ -36,8 +36,7 @@ function prepareElementRegex (input, addFlags = '') {
 		source = input.source
 	}
 	else {
-		flags = addFlags
-		source = input
+		throw new Error('input should be a RegExp instance')
 	}
 	return { source, flags }
 }
@@ -159,7 +158,10 @@ async function replaceAsync (source, regex, replace) {
 	if (innerResult == null) {
 		innerResult = bubbleResult
 	}
-	const result = match.input.replace(outer, innerResult)
+	// replace uses `() => result` instead of just `result`
+	// as `result` would interpret `$` in the result as a regex replacement
+	// when a function that returns the result, the result is just a string, rather than an instruction
+	const result = match.input.replace(outer, () => innerResult)
 	return await replaceAsync(result, regex, replace)
 }
 

@@ -9,10 +9,9 @@ const name = require('../package.json').name
 // and even do asynchronous replacements
 async function main () {
 	const source = await readFile(readmePath, 'utf8')
-	console.log({ source })
 	const result = await replaceCommentElementAsync(
 		source,
-		'x-example',
+		/x-example/,
 		async function ({ element, attributes }) {
 			const file = extractAttribute(attributes, 'file') || 'example.js'
 			const source = await require('fs').promises.readFile(file, 'utf8')

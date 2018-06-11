@@ -106,10 +106,10 @@ function extractAttribute (attributes, attribute) {
 // Replace
 
 /**
- * Performs an operation on the content and returns the result
+ * Your callback should follow the following format
  * @callback replaceSyncCallback
- * @param {object} match
- * @param {string} content
+ * @param {string} content - the rendered inner content if the inner capture group exists, otherwise the matched content
+ * @param {object} namedCatpures - the [RegExp Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups)
  * @returns {string}
  */
 
@@ -122,21 +122,21 @@ function extractAttribute (attributes, attribute) {
  */
 function replaceSync (source, regex, replace) {
 	const result = source.replace(regex, function (...args) {
-		const group = args[args.length - 1]
-		const outer = (group && group.outer) || args[0]
-		const inner = (group && group.inner)
+		const group = args[args.length - 1] || {}
+		const outer = group.outer || args[0]
+		const inner = group.inner
 		const bubbleResult = inner == null ? outer : replaceSync(inner, regex, replace)
-		const innerResult = replace(group, bubbleResult)
+		const innerResult = replace(bubbleResult, group)
 		return innerResult
 	})
 	return result
 }
 
 /**
- * Performs an operation on the content and resolves the result
+ * Your callback should follow the following format
  * @callback replaceAsyncCallback
- * @param {object} match
- * @param {string} content
+ * @param {string} content - the rendered inner content if the inner capture group exists, otherwise the matched content
+ * @param {object} namedCatpures - the [RegExp Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups)
  * @returns {Promise<string>}
  */
 
@@ -151,10 +151,11 @@ async function replaceAsync (source, regex, replace) {
 	// evaluate if the `y` (sticky) flag will speed this up
 	const match = source.match(regex)
 	if (!match) return source
-	const outer = (match.groups && match.groups.outer) || match[0]
-	const inner = (match.groups && match.groups.inner)
+	const group = match.groups || {}
+	const outer = group.outer || match[0]
+	const inner = group.inner
 	const bubbleResult = inner == null ? outer : await replaceAsync(inner, regex, replace)
-	let innerResult = await replace(match.groups, bubbleResult)
+	let innerResult = await replace(bubbleResult, group)
 	if (innerResult == null) {
 		innerResult = bubbleResult
 	}

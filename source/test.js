@@ -88,7 +88,7 @@ const replaceElementTests = [
 				FIVE
 			SIX
 			dinner`.replace(/^\t{3}/gm, '').trim(),
-		replace (match, content) {
+		replace (content) {
 			return trimIndentation(content).toUpperCase()
 		}
 	},
@@ -111,7 +111,7 @@ const replaceElementTests = [
 			two\t
 			eerht
 			end`.replace(/^\t{3}/gm, '').trim(),
-		replace (match, content) {
+		replace (content) {
 			return trimIndentation(content).split('\n').map((line) => line.split('').reverse().join('')).join('\n')
 		}
 	},
@@ -128,7 +128,7 @@ const replaceElementTests = [
 				1.2
 			</pow>`.replace(/^\t{3}/gm, '').trim(),
 		expected: powerResult,
-		replace (match, content) {
+		replace (content) {
 			return trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 		}
 	},
@@ -144,7 +144,7 @@ const replaceElementTests = [
 				2.2
 			</pow>`.replace(/^\t{3}/gm, '').trim(),
 		expected: powerAttributesResult,
-		replace ({ attributes }, content) {
+		replace (content, { attributes }) {
 			const y = extractAttribute(attributes, 'y')
 			const x = trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 			const z = Math.pow(x, y)

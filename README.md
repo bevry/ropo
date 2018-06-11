@@ -79,7 +79,7 @@ async function main () {
         replaceSync(
             'abcd',
             /bc/,
-            function (match, content) {
+            function (content) {
                 return content.toUpperCase()
             }
         )
@@ -91,7 +91,7 @@ async function main () {
         await replaceAsync(
             'abcd',
             /bc/,
-            function (match, content) {
+            function (content) {
                 return new Promise(function (resolve) {
                     process.nextTick(function () {
                         resolve(
@@ -110,7 +110,7 @@ async function main () {
         replaceSync(
             'hello world',
             new RegExp('^(?<first>\\w+) (?<second>\\w+)$'),
-            function ({ first, second }) {
+            function (content, { first, second }) {
                 return second + ' ' + first
             }
         )
@@ -125,8 +125,7 @@ async function main () {
         replaceSync(
             'hello BEGIN good morning END world',
             new RegExp('BEGIN (?<inner>.+?) END'),
-            function (match, content) {
-                // match.inner === content
+            function (content) {
                 return content.split('').reverse().join('')
             }
         )
@@ -138,8 +137,7 @@ async function main () {
         replaceSync(
             'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
             new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
-            function (match, content) {
-                // match.inner === content
+            function (content) {
                 return content.split('').reverse().join('')
             }
         )
@@ -164,18 +162,16 @@ async function main () {
         replaceSync(
             'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
             new RegExp('(?<element>INVERT:\\d+) (?<content>.+?) /\\k<element>'),
-            function ({ content }) {
+            function (outer, { content }) {
                 return content.split('').reverse().join('')
             }
         )
     )
     // => hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
-    // as we can see, recursion was correctly, disabled
+    // as we can see, recursion was correctly disabled
     // if it wasn't, we would end up with an error like:
     // (node:7252) UnhandledPromiseRejectionWarning: RangeError: Maximum call stack size exceeded
-    // the second argument to the replace function, which is ommitted in the above example
-    // would now be the outer match content, instead of the inner match content
-    // if we replaced it, then we would end up with
+    // and if we used `outer` instead of the content capture group, we would have:
     // => hello 1:TREVNI/ gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog 1:TREVNI world
 
     // uppercase the contents of <x-uppercase>
@@ -183,7 +179,7 @@ async function main () {
         replaceElementSync(
             '<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
             /x-uppercase/,
-            function (match, content) {
+            function (content) {
                 return content.toUpperCase()
             }
         )
@@ -195,7 +191,7 @@ async function main () {
         replaceElementSync(
             '<x-pow>2 <x-power>3 4</x-power> 5</x-pow>',
             /x-pow(?:er)?/,
-            function (match, content) {
+            function (content) {
                 const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
                 return result
             }
@@ -211,7 +207,7 @@ async function main () {
         replaceElementSync(
             '<x-pow>2 <x-pow:2>3 4</x-pow:2> 5</x-pow>',
             /x-pow(?::\d+)?/,
-            function (match, content) {
+            function (content) {
                 const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
                 return result
             }
@@ -224,7 +220,7 @@ async function main () {
         replaceElementSync(
             '<x-pow power=10>2</x-pow>',
             /x-pow/,
-            function ({ attributes }, content) {
+            function (content, { attributes }) {
                 const power = extractAttribute(attributes, 'power')
                 const result = Math.pow(content, power)
                 return result
@@ -238,7 +234,7 @@ async function main () {
         await replaceElementAsync(
             '<x-readfile>example.txt</x-readfile>',
             /x-readfile/,
-            function (match, content) {
+            function (content) {
                 return require('fs').promises.readFile(content, 'utf8')
             }
         )

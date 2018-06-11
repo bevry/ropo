@@ -2,17 +2,18 @@
 
 const spawn = require('await-spawn')
 const { writeFile, readFile } = require('fs').promises
-const { extractAttribute, replaceCommentElementsAsync } = require('./')
+const { extractAttribute, replaceCommentElementAsync } = require('./')
 const readmePath = require('path').join(__dirname, '..', 'README.md')
 const name = require('../package.json').name
 
 // and even do asynchronous replacements
 async function main () {
 	const source = await readFile(readmePath, 'utf8')
-	const result = await replaceCommentElementsAsync(
+	console.log({ source })
+	const result = await replaceCommentElementAsync(
 		source,
+		'x-example',
 		async function ({ element, attributes }) {
-			if (element !== 'x-example') return null
 			const file = extractAttribute(attributes, 'file') || 'example.js'
 			const source = await require('fs').promises.readFile(file, 'utf8')
 			const attr = file === 'example.js' ? '' : ` file="${file}"`
@@ -22,7 +23,9 @@ async function main () {
 				'``` js',
 				source.replace("require('./')", `require('${name}')`).trim(),
 				'```',
-				'results in:',
+				'',
+				'Which results in:',
+				'',
 				'```',
 				output.toString().trim(),
 				'```',

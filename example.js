@@ -38,7 +38,7 @@ async function main () {
 	console.log(
 		replaceSync(
 			'hello world',
-			new RegExp('^(?<first>\\w+) (?<second>\\w+)$'),
+			new RegExp('^(?<first>\\w+) (?<second>\\w+)'),
 			function ({ first, second }) {
 				return second + ' ' + first
 			}

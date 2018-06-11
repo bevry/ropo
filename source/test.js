@@ -132,6 +132,28 @@ const replaceElementTests = [
 			const z = Math.pow(x, y)
 			return z
 		}
+	},
+	{
+		name: 'compact',
+		element: /x-link/,
+		source: '<h1><x-link></x-link></h1><h1><x-link></x-link></h1>',
+		expected: '<h1>replaced</h1><h1>replaced</h1>',
+		replace () {
+			return 'replaced'
+		}
+	},
+	{
+		name: 'multi attribute',
+		element: /el/,
+		source: '<el x=1 data-x=2 data-y=3 y=4></el>',
+		expected: '1 2 3 4',
+		replace (content, { attributes }) {
+			const a = extractAttribute(attributes, 'x')
+			const b = extractAttribute(attributes, 'data-x')
+			const c = extractAttribute(attributes, 'data-y')
+			const d = extractAttribute(attributes, 'y')
+			return [a, b, c, d].join(' ')
+		}
 	}
 ]
 

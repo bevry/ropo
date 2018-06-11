@@ -75,7 +75,7 @@ To accomplish this, we would do the following:
 ``` js
 'use strict'
 
-const { extractAttribute, replaceElementSync, replaceElementAsync } = require('replace-html-element')
+const { extractAttribute, replaceElementSync, replaceElementAsync } = require('ropo')
 
 // uppercase the contents of <x-uppercase>
 console.log(
@@ -155,8 +155,6 @@ results in:
 'use strict'
 
 module.exports = require('editions').requirePackage(__dirname, require)
-
-
 ```
 <!-- </x-example> -->
 

@@ -24,7 +24,7 @@ async function main () {
 				'```',
 				'results in:',
 				'```',
-				output.trim(),
+				output.toString().trim(),
 				'```',
 				`<!-- </${element.toUpperCase()}> -->`
 			].join('\n')

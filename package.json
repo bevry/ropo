@@ -98,7 +98,7 @@
     "our:setup": "npm run our:setup:npm",
     "our:setup:npm": "npm install",
     "our:clean": "rm -Rf ./docs ./es2015 ./es5 ./out",
-    "our:compile": "echo no need for this project",
+    "our:compile": "npm run my:compile",
     "our:meta": "npm run our:meta:docs && npm run our:meta:projectz",
     "our:meta:docs": "documentation build -f html -o ./docs -g --shallow ./source/**.js",
     "our:meta:projectz": "projectz compile",
@@ -112,6 +112,7 @@
     "our:release:check-dirty": "git diff --exit-code",
     "our:release:tag": "export MESSAGE=$(cat ./HISTORY.md | sed -n \"/## v$npm_package_version/,/##/p\" | sed 's/## //' | awk 'NR>1{print buf}{buf = $0}') && test \"$MESSAGE\" || (echo 'proper changelog entry not found' && exit -1) && git tag v$npm_package_version -am \"$MESSAGE\"",
     "our:release:push": "git push origin master && git push origin --tags",
+    "my:compile": "node --harmony ./source/compile.js",
     "test": "node --harmony ./source/test.js --joe-reporter=console"
   }
 }

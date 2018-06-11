@@ -32,6 +32,9 @@ String replacement utilities with support for both synchronous and asynchronous 
 <!-- /DESCRIPTION -->
 
 
+> `ropo` is `replace` in [Yoruba](https://en.wikipedia.org/wiki/Yoruba_language)
+
+
 <!-- INSTALL/ -->
 
 <h2>Install</h2>

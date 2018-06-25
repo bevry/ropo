@@ -15,7 +15,7 @@ async function main () {
 	const result = await replaceCommentElementAsync(
 		source,
 		/x-example/,
-		async function (content, { element, attributes }) {
+		async function (sections, { element, attributes }) {
 			const file = extractAttribute(attributes, 'file') || 'example.js'
 			const source = await require('fs').promises.readFile(file, 'utf8')
 			const attr = file === 'example.js' ? '' : ` file="${file}"`

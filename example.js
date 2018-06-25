@@ -1,5 +1,6 @@
 'use strict'
 
+const { strictEqual } = require('assert').strict
 const { extractAttribute, replaceSync, replaceAsync, replaceElementSync, replaceElementAsync } = require('./')
 
 async function main () {
@@ -8,7 +9,7 @@ async function main () {
 		replaceSync(
 			'abcd',
 			/bc/,
-			function (content) {
+			function ({ content }) {
 				return content.toUpperCase()
 			}
 		)
@@ -20,7 +21,7 @@ async function main () {
 		await replaceAsync(
 			'abcd',
 			/bc/,
-			function (content) {
+			function ({ content }) {
 				return new Promise(function (resolve) {
 					process.nextTick(function () {
 						resolve(
@@ -33,40 +34,44 @@ async function main () {
 	)
 	// => aBCd
 
-	// use RegExp named capture groups to swap two words
+	// use a RegExp named capture group to allow the inversion of content between BEGIN and END
 	// https://github.com/tc39/proposal-regexp-named-groups
 	console.log(
 		replaceSync(
-			'hello world',
-			new RegExp('^(?<first>\\w+) (?<second>\\w+)$'),
-			function (content, { first, second }) {
-				return second + ' ' + first
-			}
-		)
-	)
-	// => world hello
-	// yes, doing content.split(' ').reverse().join('') would have also worked
-	// but now you know what RegExp named capture groups are and how to use them
-	// which will come into play in the following examples
-
-	// invert anything between BEGIN and END
-	console.log(
-		replaceSync(
 			'hello BEGIN good morning END world',
-			new RegExp('BEGIN (?<inner>.+?) END'),
-			function (content) {
-				return content.split('').reverse().join('')
+			new RegExp('BEGIN (?<inside>.+?) END'),
+			function (section, captures) {
+				strictEqual(section.outer, 'BEGIN good morning END')
+				strictEqual(section.inner, null)
+				strictEqual(section.content, section.outer)
+				return captures.inside.split('').reverse().join('')
 			}
 		)
 	)
 	// => hello gninrom doog world
 
-	// invert anything between INVERT:<N>
+
+	// for convenience, and some extra magic (magic explained in next example) we can call `inside` `inner` to have it used as a section
+	console.log(
+		replaceSync(
+			'hello BEGIN good morning END world',
+			new RegExp('BEGIN (?<inner>.+?) END'),
+			function (section, captures) {
+				strictEqual(section.outer, 'BEGIN good morning END')
+				strictEqual(section.inner, captures.inner)
+				strictEqual(section.content, captures.inner)
+				return section.content.split('').reverse().join('')
+			}
+		)
+	)
+	// => hello gninrom doog world
+
+	// invert anything between INVERT:<N> with recursive rendering
 	console.log(
 		replaceSync(
 			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
 			new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
-			function (content) {
+			function ({ content }) {
 				return content.split('').reverse().join('')
 			}
 		)
@@ -74,13 +79,13 @@ async function main () {
 	// => hello gninrom guten yadg morgen doog world
 	// notice how the text is replaced correctly, gday has 3 inversions applied, so it is inverted
 	// whereas guten morgen has 2 inversions applied, so is reset
-	// the ability to perform this recursive replacement is possible by using a RegExp named capture group called `inner` with ropo
-	// when inner is provided, ropo will perform recursion on inner
-	// e.g. using inner, the initial recursion will occur on the content: good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning
+	// the ability to perform this recursive replacement is possible because if the RegExp named capture group `inner` exists,
+	// then ropo will perform recursion on it inner, and return the result as the `content` section
+	// e.g. by doing this, the initial recursion will occur on: good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning
 	// then on: guten INVERT:3 gday /INVERT:3 morgen
 	// and finally on: gday
-	// without inner, recursion would have to happen on the outer, which would cause the replacement to recur infinitely against itself
-	// e.g. the intiial recursion would occur on: INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1
+	// without doing this, recursion would have to happen on the outer, which would cause the replacement to recur infinitely against itself
+	// e.g. the initial recursion would occur on: INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1
 	// and the second on: INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1
 	// and the third on: INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1
 	// and so on, so no progress is made
@@ -90,9 +95,9 @@ async function main () {
 	console.log(
 		replaceSync(
 			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
-			new RegExp('(?<element>INVERT:\\d+) (?<content>.+?) /\\k<element>'),
-			function (outer, { content }) {
-				return content.split('').reverse().join('')
+			new RegExp('(?<element>INVERT:\\d+) (?<whatever>.+?) /\\k<element>'),
+			function (sections, { whatever }) {
+				return whatever.split('').reverse().join('')
 			}
 		)
 	)
@@ -100,15 +105,19 @@ async function main () {
 	// as we can see, recursion was correctly disabled
 	// if it wasn't, we would end up with an error like:
 	// (node:7252) UnhandledPromiseRejectionWarning: RangeError: Maximum call stack size exceeded
-	// and if we used `outer` instead of the content capture group, we would have:
+	// and if we used the `outer` section instead of the `whatever` capture group, we would have:
 	// => hello 1:TREVNI/ gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog 1:TREVNI world
+
+	// ropo also has built in helpers for element replacements,
+	// such that we only need to specify the tag name/regexp,
+	// and ropo handles the replacement sections and capture groups for us
 
 	// uppercase the contents of <x-uppercase>
 	console.log(
 		replaceElementSync(
 			'<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
 			/x-uppercase/,
-			function (content) {
+			function ({ content }) {
 				return content.toUpperCase()
 			}
 		)
@@ -120,7 +129,7 @@ async function main () {
 		replaceElementSync(
 			'<x-pow>2 <x-power>3 4</x-power> 5</x-pow>',
 			/x-pow(?:er)?/,
-			function (content) {
+			function ({ content }) {
 				const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 				return result
 			}
@@ -136,7 +145,7 @@ async function main () {
 		replaceElementSync(
 			'<x-pow>2 <x-pow:2>3 4</x-pow:2> 5</x-pow>',
 			/x-pow(?::\d+)?/,
-			function (content) {
+			function ({ content }) {
 				const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 				return result
 			}
@@ -149,7 +158,7 @@ async function main () {
 		replaceElementSync(
 			'<x-pow power=10>2</x-pow>',
 			/x-pow/,
-			function (content, { attributes }) {
+			function ({ content }, { attributes }) {
 				const power = extractAttribute(attributes, 'power')
 				const result = Math.pow(content, power)
 				return result
@@ -161,21 +170,21 @@ async function main () {
 	// and even do asynchronous replacements
 	console.log(
 		await replaceElementAsync(
-			'<x-readfile>example.txt</x-readfile>',
+			'<x-readfile>example-fixture.txt</x-readfile>',
 			/x-readfile/,
-			function (content) {
+			function ({ content }) {
 				return require('fs').promises.readFile(content, 'utf8')
 			}
 		)
 	)
-	// => hello world from example.txt
+	// => hello world from example-fixture.txt
 
 	// and with support for self-closing elements
 	console.log(
 		replaceElementSync(
 			'<x-pow x=2 y=3 /> <x-pow>4 6</x-pow>',
 			/x-pow/,
-			function (content, { attributes }) {
+			function ({ content }, { attributes }) {
 				const x = extractAttribute(attributes, 'x') || content.split(' ')[0]
 				const y = extractAttribute(attributes, 'y') || content.split(' ')[1]
 				const result = Math.pow(x, y)

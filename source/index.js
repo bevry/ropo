@@ -108,9 +108,12 @@ function extractAttribute (attributes, attribute) {
 /**
  * Your callback should follow the following format
  * @callback replaceSyncCallback
- * @param {string} content - the rendered inner content if the inner capture group exists, otherwise the matched content
- * @param {object} namedCatpures - the [RegExp Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups)
- * @returns {string}
+ * @param {object} sections
+ * @param {string} sections.outer - the matched content
+ * @param {string|null} sections.inner - the inner named capture group, but set to null if it wasn't defined
+ * @param {string} sections.content - the rendered inner named capture group if it exists, otherwise the outer content
+ * @param {object} captures - the [RegExp Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups)
+ * @returns {string?}
  */
 
 /**
@@ -122,11 +125,15 @@ function extractAttribute (attributes, attribute) {
  */
 function replaceSync (source, regex, replace) {
 	const result = source.replace(regex, function (...args) {
-		const group = args[args.length - 1] || {}
-		const outer = group.outer || args[0]
-		const inner = group.inner
-		const bubbleResult = inner == null ? outer : replaceSync(inner, regex, replace)
-		const innerResult = replace(bubbleResult, group)
+		const captures = args[args.length - 1] || {}
+		const outer = captures.outer || args[0]
+		const inner = captures.inner == null ? null : captures.inner
+		const content = inner === null ? outer : replaceSync(inner, regex, replace)
+		const sections = { outer, inner, content }
+		let innerResult = replace(sections, captures)
+		if (innerResult == null) {
+			innerResult = content
+		}
 		return innerResult
 	})
 	return result
@@ -135,9 +142,12 @@ function replaceSync (source, regex, replace) {
 /**
  * Your callback should follow the following format
  * @callback replaceAsyncCallback
- * @param {string} content - the rendered inner content if the inner capture group exists, otherwise the matched content
- * @param {object} namedCatpures - the [RegExp Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups)
- * @returns {Promise<string>}
+ * @param {object} sections
+ * @param {string} sections.outer - the matched content
+ * @param {string|null} sections.inner - the inner named capture group, but set to null if it wasn't defined
+ * @param {string} sections.content - the rendered inner named capture group if it exists, otherwise the outer content
+ * @param {object} captures - the [RegExp Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups)
+ * @returns {Promise<string?>}
  */
 
 /**
@@ -151,13 +161,14 @@ async function replaceAsync (source, regex, replace) {
 	// evaluate if the `y` (sticky) flag will speed this up
 	const match = source.match(regex)
 	if (!match) return source
-	const group = match.groups || {}
-	const outer = group.outer || match[0]
-	const inner = group.inner
-	const bubbleResult = inner == null ? outer : await replaceAsync(inner, regex, replace)
-	let innerResult = await replace(bubbleResult, group)
+	const captures = match.groups || {}
+	const outer = captures.outer || match[0]
+	const inner = captures.inner == null ? null : captures.inner
+	const content = inner === null ? outer : await replaceAsync(inner, regex, replace)
+	const sections = { outer, inner, content }
+	let innerResult = await replace(sections, captures)
 	if (innerResult == null) {
-		innerResult = bubbleResult
+		innerResult = content
 	}
 	// replace uses `() => result` instead of just `result`
 	// as `result` would interpret `$` in the result as a regex replacement

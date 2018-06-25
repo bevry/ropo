@@ -1,5 +1,10 @@
 # History
 
+## v2.0.0 2018 June 26
+- First argument in replace callbacks is now an object of the sections `outer`, `inner`, `content`
+- Second argument is the named capture groups object
+- To upgrade, change your replace callback's first argument from `content` to `{ content }`
+
 ## v1.2.0 2018 June 11
 - Fixed element detection when the element had no inner content, e.g. `<el></el>`
 - Fixed attributes being extracted based on their ending, instead of their entirety

@@ -70,7 +70,7 @@ const replaceElementTests = [
 				FIVE
 			SIX
 			dinner`.replace(/^\t{3}/gm, '').trim(),
-		replace (content) {
+		replace ({ content }) {
 			return trimIndentation(content).toUpperCase()
 		}
 	},
@@ -93,7 +93,7 @@ const replaceElementTests = [
 			two\t
 			eerht
 			end`.replace(/^\t{3}/gm, '').trim(),
-		replace (content) {
+		replace ({ content }) {
 			return trimIndentation(content).split('\n').map((line) => line.split('').reverse().join('')).join('\n')
 		}
 	},
@@ -110,7 +110,7 @@ const replaceElementTests = [
 				1.2
 			</pow>`.replace(/^\t{3}/gm, '').trim(),
 		expected: powerResult,
-		replace (content) {
+		replace ({ content }) {
 			return trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 		}
 	},
@@ -126,7 +126,7 @@ const replaceElementTests = [
 				2.2
 			</pow>`.replace(/^\t{3}/gm, '').trim(),
 		expected: powerAttributesResult,
-		replace (content, { attributes }) {
+		replace ({ content }, { attributes }) {
 			const y = extractAttribute(attributes, 'y')
 			const x = trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 			const z = Math.pow(x, y)
@@ -147,7 +147,7 @@ const replaceElementTests = [
 		element: /el/,
 		source: '<el x=1 data-x=2 data-y=3 y=4></el>',
 		expected: '1 2 3 4',
-		replace (content, { attributes }) {
+		replace (sections, { attributes }) {
 			const a = extractAttribute(attributes, 'x')
 			const b = extractAttribute(attributes, 'data-x')
 			const c = extractAttribute(attributes, 'data-y')
@@ -188,7 +188,7 @@ joe.suite('ropo', function (suite, test) {
 	test('example', function (done) {
 		const expected = `aBCd
 		aBCd
-		world hello
+		hello gninrom doog world
 		hello gninrom doog world
 		hello gninrom guten yadg morgen doog world
 		hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
@@ -196,7 +196,7 @@ joe.suite('ropo', function (suite, test) {
 		8.263199609878108e+121
 		8.263199609878108e+121
 		1024
-		hello world from example.txt
+		hello world from example-fixture.txt
 		8 4096
 		`.replace(/^\t{2}/gm, '')
 

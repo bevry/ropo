@@ -10,12 +10,12 @@ const readmePath = pathUtil.join(root, 'README.md')
 const name = require('../package.json').name
 
 // and even do asynchronous replacements
-async function main () {
+async function main() {
 	const source = await readFile(readmePath, 'utf8')
 	const result = await replaceCommentElementAsync(
 		source,
 		/x-example/,
-		async function (sections, { element, attributes }) {
+		async function(sections, { element, attributes }) {
 			const file = extractAttribute(attributes, 'file') || 'example.js'
 			const source = await require('fs').promises.readFile(file, 'utf8')
 			const attr = file === 'example.js' ? '' : ` file="${file}"`
@@ -24,7 +24,10 @@ async function main () {
 			const result = [
 				`<!-- <${element.toUpperCase() + attr}> -->`,
 				'``` js',
-				source.replace("require('./')", `require('${name}')`).trim().replace(/\t/g, '    '),
+				source
+					.replace("require('./')", `require('${name}')`)
+					.trim()
+					.replace(/\t/g, '    '),
 				'```',
 				'',
 				'Which results in:',

@@ -2,8 +2,12 @@
 'use strict'
 
 const { equal } = require('assert-helpers')
-const joe = require('joe')
-const { extractAttribute, replaceElementSync, replaceElementAsync } = require('./')
+const kava = require('kava')
+const {
+	extractAttribute,
+	replaceElementSync,
+	replaceElementAsync
+} = require('./')
 const trimIndentation = require('trim-indentation')
 
 const spawn = require('await-spawn')
@@ -13,24 +17,10 @@ const root = pathUtil.join(__dirname, '..')
 // ------------------------------------
 // Tests
 
-const powerResult = Math.pow(
-	Math.pow(1.1,
-		Math.pow(2.1, 2.2)
-	),
-	1.2
-)
+const powerResult = Math.pow(Math.pow(1.1, Math.pow(2.1, 2.2)), 1.2)
 
 const powerAttributesResult = Math.pow(
-	Math.pow(
-		Math.pow(
-			2.1,
-			Math.pow(
-				3.2,
-				3.1
-			)
-		),
-		2.2
-	),
+	Math.pow(Math.pow(2.1, Math.pow(3.2, 3.1)), 2.2),
 	1.1
 )
 
@@ -57,7 +47,9 @@ const replaceElementTests = [
 					</uppercase>
 				six
 			</uc>
-			dinner`.replace(/^\t{3}/gm, '').trim(),
+			dinner`
+			.replace(/^\t{3}/gm, '')
+			.trim(),
 		expected: `
 			breakfast
 			<title>blah</title>
@@ -69,8 +61,10 @@ const replaceElementTests = [
 			FOUR
 				FIVE
 			SIX
-			dinner`.replace(/^\t{3}/gm, '').trim(),
-		replace ({ content }) {
+			dinner`
+			.replace(/^\t{3}/gm, '')
+			.trim(),
+		replace({ content }) {
 			return trimIndentation(content).toUpperCase()
 		}
 	},
@@ -86,15 +80,27 @@ const replaceElementTests = [
 					</invert>
 				three
 			</in>
-			end`.replace(/^\t{3}/gm, '').trim(),
+			end`
+			.replace(/^\t{3}/gm, '')
+			.trim(),
 		expected: `
 			begin
 			eno
 			two\t
 			eerht
-			end`.replace(/^\t{3}/gm, '').trim(),
-		replace ({ content }) {
-			return trimIndentation(content).split('\n').map((line) => line.split('').reverse().join('')).join('\n')
+			end`
+			.replace(/^\t{3}/gm, '')
+			.trim(),
+		replace({ content }) {
+			return trimIndentation(content)
+				.split('\n')
+				.map(line =>
+					line
+						.split('')
+						.reverse()
+						.join('')
+				)
+				.join('\n')
 		}
 	},
 	{
@@ -108,10 +114,14 @@ const replaceElementTests = [
 						2.2
 					</power>
 				1.2
-			</pow>`.replace(/^\t{3}/gm, '').trim(),
+			</pow>`
+			.replace(/^\t{3}/gm, '')
+			.trim(),
 		expected: powerResult,
-		replace ({ content }) {
-			return trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+		replace({ content }) {
+			return trimIndentation(content)
+				.split(/[\n\s]+/)
+				.reduce((a, b) => Math.pow(a, b))
 		}
 	},
 	{
@@ -124,11 +134,15 @@ const replaceElementTests = [
 						3.2
 					</power>
 				2.2
-			</pow>`.replace(/^\t{3}/gm, '').trim(),
+			</pow>`
+			.replace(/^\t{3}/gm, '')
+			.trim(),
 		expected: powerAttributesResult,
-		replace ({ content }, { attributes }) {
+		replace({ content }, { attributes }) {
 			const y = extractAttribute(attributes, 'y')
-			const x = trimIndentation(content).split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
+			const x = trimIndentation(content)
+				.split(/[\n\s]+/)
+				.reduce((a, b) => Math.pow(a, b))
 			const z = Math.pow(x, y)
 			return z
 		}
@@ -138,7 +152,7 @@ const replaceElementTests = [
 		element: /x-link/,
 		source: '<h1><x-link></x-link></h1><h1><x-link></x-link></h1>',
 		expected: '<h1>replaced</h1><h1>replaced</h1>',
-		replace () {
+		replace() {
 			return 'replaced'
 		}
 	},
@@ -147,7 +161,7 @@ const replaceElementTests = [
 		element: /el/,
 		source: '<el x=1 data-x=2 data-y=3 y=4></el>',
 		expected: '1 2 3 4',
-		replace (sections, { attributes }) {
+		replace(sections, { attributes }) {
 			const a = extractAttribute(attributes, 'x')
 			const b = extractAttribute(attributes, 'data-x')
 			const c = extractAttribute(attributes, 'data-y')
@@ -160,32 +174,40 @@ const replaceElementTests = [
 // ------------------------------------
 // Tests
 
-joe.suite('ropo', function (suite, test) {
-	suite('replaceElementTests', function (suite) {
-		replaceElementTests.forEach(function ({ name, element, source, expected, replace }) {
-			suite(name, function (suite, test) {
-				test('replaceElementSync', function () {
+kava.suite('ropo', function(suite, test) {
+	suite('replaceElementTests', function(suite) {
+		replaceElementTests.forEach(function({
+			name,
+			element,
+			source,
+			expected,
+			replace
+		}) {
+			suite(name, function(suite, test) {
+				test('replaceElementSync', function() {
 					const actual = replaceElementSync(source, element, replace)
 					equal(actual, expected)
 				})
-				test('replaceElementAsync', function (done) {
-					replaceElementAsync(source, element, function (...args) {
-						return new Promise(function (resolve) {
-							process.nextTick(function () {
+				test('replaceElementAsync', function(done) {
+					replaceElementAsync(source, element, function(...args) {
+						return new Promise(function(resolve) {
+							process.nextTick(function() {
 								const result = replace(...args)
 								resolve(result)
 							})
 						})
-					}).catch(done).then((actual) => {
-						equal(actual, expected)
-						done()
 					})
+						.catch(done)
+						.then(actual => {
+							equal(actual, expected)
+							done()
+						})
 				})
 			})
 		})
 	})
 
-	test('example', function (done) {
+	test('example', function(done) {
 		const expected = `aBCd
 		aBCd
 		hello gninrom doog world
@@ -203,7 +225,7 @@ joe.suite('ropo', function (suite, test) {
 		const path = pathUtil.join(root, 'example.js')
 		spawn('node', [path], { cwd: root })
 			.catch(done)
-			.then(function (stdout) {
+			.then(function(stdout) {
 				equal(stdout.toString(), expected)
 				done()
 			})

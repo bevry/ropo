@@ -1,36 +1,32 @@
 'use strict'
 
-const { strictEqual } = require('assert').strict
-const { extractAttribute, replaceSync, replaceAsync, replaceElementSync, replaceElementAsync } = require('./')
+const { strictEqual } = require('assert')
+const {
+	extractAttribute,
+	replaceSync,
+	replaceAsync,
+	replaceElementSync,
+	replaceElementAsync
+} = require('./')
 
 async function main () {
 	// uppercase `bc` of `abcd`
 	console.log(
-		replaceSync(
-			'abcd',
-			/bc/,
-			function ({ content }) {
-				return content.toUpperCase()
-			}
-		)
+		replaceSync('abcd', /bc/, function ({ content }) {
+			return content.toUpperCase()
+		})
 	)
 	// => aBCd
 
 	// uppercase `bc` of `abcd` asynchronously
 	console.log(
-		await replaceAsync(
-			'abcd',
-			/bc/,
-			function ({ content }) {
-				return new Promise(function (resolve) {
-					process.nextTick(function () {
-						resolve(
-							content.toUpperCase()
-						)
-					})
+		await replaceAsync('abcd', /bc/, function ({ content }) {
+			return new Promise(function (resolve) {
+				process.nextTick(function () {
+					resolve(content.toUpperCase())
 				})
-			}
-		)
+			})
+		})
 	)
 	// => aBCd
 
@@ -44,12 +40,14 @@ async function main () {
 				strictEqual(section.outer, 'BEGIN good morning END')
 				strictEqual(section.inner, null)
 				strictEqual(section.content, section.outer)
-				return captures.inside.split('').reverse().join('')
+				return captures.inside
+					.split('')
+					.reverse()
+					.join('')
 			}
 		)
 	)
 	// => hello gninrom doog world
-
 
 	// for convenience, and some extra magic (magic explained in next example) we can call `inside` `inner` to have it used as a section
 	console.log(
@@ -60,7 +58,10 @@ async function main () {
 				strictEqual(section.outer, 'BEGIN good morning END')
 				strictEqual(section.inner, captures.inner)
 				strictEqual(section.content, captures.inner)
-				return section.content.split('').reverse().join('')
+				return section.content
+					.split('')
+					.reverse()
+					.join('')
 			}
 		)
 	)
@@ -72,7 +73,10 @@ async function main () {
 			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
 			new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
 			function ({ content }) {
-				return content.split('').reverse().join('')
+				return content
+					.split('')
+					.reverse()
+					.join('')
 			}
 		)
 	)
@@ -97,7 +101,10 @@ async function main () {
 			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
 			new RegExp('(?<element>INVERT:\\d+) (?<whatever>.+?) /\\k<element>'),
 			function (sections, { whatever }) {
-				return whatever.split('').reverse().join('')
+				return whatever
+					.split('')
+					.reverse()
+					.join('')
 			}
 		)
 	)
@@ -155,15 +162,14 @@ async function main () {
 
 	// we can even fetch attributes
 	console.log(
-		replaceElementSync(
-			'<x-pow power=10>2</x-pow>',
-			/x-pow/,
-			function ({ content }, { attributes }) {
-				const power = extractAttribute(attributes, 'power')
-				const result = Math.pow(content, power)
-				return result
-			}
-		)
+		replaceElementSync('<x-pow power=10>2</x-pow>', /x-pow/, function (
+		{ content },
+		{ attributes }
+		) {
+			const power = extractAttribute(attributes, 'power')
+			const result = Math.pow(content, power)
+			return result
+		})
 	)
 	// => 1024
 
@@ -193,6 +199,5 @@ async function main () {
 		)
 	)
 	// => 8 4096
-
 }
 main()

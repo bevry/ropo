@@ -4,6 +4,7 @@
 
 <!-- /TITLE -->
 
+
 <!-- BADGES/ -->
 
 <span class="badge-travisci"><a href="http://travis-ci.org/bevry/ropo" title="Check this project's build status on TravisCI"><img src="https://img.shields.io/travis/bevry/ropo/master.svg" alt="Travis CI Build Status" /></a></span>
@@ -25,11 +26,13 @@
 
 <!-- /BADGES -->
 
+
 <!-- DESCRIPTION/ -->
 
 String replacement utilities with support for both synchronous and asynchronous replacements. Supports replacing regular expressions, HTML Elements, and comment elements. Compatible with async/await.
 
 <!-- /DESCRIPTION -->
+
 
 > `ropo` is `replace` in [Yoruba](https://en.wikipedia.org/wiki/Yoruba_language)
 
@@ -38,7 +41,6 @@ String replacement utilities with support for both synchronous and asynchronous 
 <h2>Install</h2>
 
 <a href="https://npmjs.com" title="npm is a package manager for javascript"><h3>npm</h3></a>
-
 <ul>
 <li>Install: <code>npm install --save ropo</code></li>
 <li>Require: <code>require('ropo')</code></li>
@@ -46,7 +48,7 @@ String replacement utilities with support for both synchronous and asynchronous 
 
 <a href="https://jspm.io" title="Native ES Modules CDN"><h3>jspm</h3></a>
 
-```html
+``` html
 <script type="module">
     import * as pkg from '//dev.jspm.io/ropo'
 </script>
@@ -64,15 +66,16 @@ String replacement utilities with support for both synchronous and asynchronous 
 
 This project provides its type information via inline <a href="http://usejsdoc.org" title="JSDoc is an API documentation generator for JavaScript, similar to Javadoc or phpDocumentor">JSDoc Comments</a>. To make use of this in <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a>, set your <code>maxNodeModuleJsDepth</code> compiler option to `5` or thereabouts. You can accomlish this via your `tsconfig.json` file like so:
 
-```json
+``` json
 {
-    "compilerOptions": {
-        "maxNodeModuleJsDepth": 5
-    }
+  "compilerOptions": {
+    "maxNodeModuleJsDepth": 5
+  }
 }
 ```
 
 <!-- /INSTALL -->
+
 
 ## Usage
 
@@ -81,8 +84,7 @@ This project provides its type information via inline <a href="http://usejsdoc.o
 [Tests.](https://github.com/bevry/ropo/blob/master/source/test.js)
 
 <!-- <x-example> -->
-
-```js
+``` js
 'use strict'
 
 const { strictEqual } = require('assert')
@@ -94,10 +96,10 @@ const {
     replaceElementAsync
 } = require('ropo')
 
-async function main() {
+async function main () {
     // uppercase `bc` of `abcd`
     console.log(
-        replaceSync('abcd', /bc/, function({ content }) {
+        replaceSync('abcd', /bc/, function ({ content }) {
             return content.toUpperCase()
         })
     )
@@ -105,9 +107,9 @@ async function main() {
 
     // uppercase `bc` of `abcd` asynchronously
     console.log(
-        await replaceAsync('abcd', /bc/, function({ content }) {
-            return new Promise(function(resolve) {
-                process.nextTick(function() {
+        await replaceAsync('abcd', /bc/, function ({ content }) {
+            return new Promise(function (resolve) {
+                process.nextTick(function () {
                     resolve(content.toUpperCase())
                 })
             })
@@ -121,7 +123,7 @@ async function main() {
         replaceSync(
             'hello BEGIN good morning END world',
             new RegExp('BEGIN (?<inside>.+?) END'),
-            function(section, captures) {
+            function (section, captures) {
                 strictEqual(section.outer, 'BEGIN good morning END')
                 strictEqual(section.inner, null)
                 strictEqual(section.content, section.outer)
@@ -139,7 +141,7 @@ async function main() {
         replaceSync(
             'hello BEGIN good morning END world',
             new RegExp('BEGIN (?<inner>.+?) END'),
-            function(section, captures) {
+            function (section, captures) {
                 strictEqual(section.outer, 'BEGIN good morning END')
                 strictEqual(section.inner, captures.inner)
                 strictEqual(section.content, captures.inner)
@@ -157,7 +159,7 @@ async function main() {
         replaceSync(
             'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
             new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
-            function({ content }) {
+            function ({ content }) {
                 return content
                     .split('')
                     .reverse()
@@ -184,10 +186,8 @@ async function main() {
     console.log(
         replaceSync(
             'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
-            new RegExp(
-                '(?<element>INVERT:\\d+) (?<whatever>.+?) /\\k<element>'
-            ),
-            function(sections, { whatever }) {
+            new RegExp('(?<element>INVERT:\\d+) (?<whatever>.+?) /\\k<element>'),
+            function (sections, { whatever }) {
                 return whatever
                     .split('')
                     .reverse()
@@ -211,7 +211,7 @@ async function main() {
         replaceElementSync(
             '<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
             /x-uppercase/,
-            function({ content }) {
+            function ({ content }) {
                 return content.toUpperCase()
             }
         )
@@ -223,10 +223,8 @@ async function main() {
         replaceElementSync(
             '<x-pow>2 <x-power>3 4</x-power> 5</x-pow>',
             /x-pow(?:er)?/,
-            function({ content }) {
-                const result = content
-                    .split(/[\n\s]+/)
-                    .reduce((a, b) => Math.pow(a, b))
+            function ({ content }) {
+                const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
                 return result
             }
         )
@@ -241,10 +239,8 @@ async function main() {
         replaceElementSync(
             '<x-pow>2 <x-pow:2>3 4</x-pow:2> 5</x-pow>',
             /x-pow(?::\d+)?/,
-            function({ content }) {
-                const result = content
-                    .split(/[\n\s]+/)
-                    .reduce((a, b) => Math.pow(a, b))
+            function ({ content }) {
+                const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
                 return result
             }
         )
@@ -253,9 +249,9 @@ async function main() {
 
     // we can even fetch attributes
     console.log(
-        replaceElementSync('<x-pow power=10>2</x-pow>', /x-pow/, function(
-            { content },
-            { attributes }
+        replaceElementSync('<x-pow power=10>2</x-pow>', /x-pow/, function (
+        { content },
+        { attributes }
         ) {
             const power = extractAttribute(attributes, 'power')
             const result = Math.pow(content, power)
@@ -269,7 +265,7 @@ async function main() {
         await replaceElementAsync(
             '<x-readfile>example-fixture.txt</x-readfile>',
             /x-readfile/,
-            function({ content }) {
+            function ({ content }) {
                 return require('fs').promises.readFile(content, 'utf8')
             }
         )
@@ -281,11 +277,9 @@ async function main() {
         replaceElementSync(
             '<x-pow x=2 y=3 /> <x-pow>4 6</x-pow>',
             /x-pow/,
-            function({ content }, { attributes }) {
-                const x =
-                    extractAttribute(attributes, 'x') || content.split(' ')[0]
-                const y =
-                    extractAttribute(attributes, 'y') || content.split(' ')[1]
+            function ({ content }, { attributes }) {
+                const x = extractAttribute(attributes, 'x') || content.split(' ')[0]
+                const y = extractAttribute(attributes, 'y') || content.split(' ')[1]
                 const result = Math.pow(x, y)
                 return result
             }
@@ -312,7 +306,6 @@ hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
 hello world from example-fixture.txt
 8 4096
 ```
-
 <!-- </x-example> -->
 
 <!-- HISTORY/ -->
@@ -323,6 +316,7 @@ hello world from example-fixture.txt
 
 <!-- /HISTORY -->
 
+
 <!-- CONTRIBUTE/ -->
 
 <h2>Contribute</h2>
@@ -330,6 +324,7 @@ hello world from example-fixture.txt
 <a href="https://github.com/bevry/ropo/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
 
 <!-- /CONTRIBUTE -->
+
 
 <!-- BACKERS/ -->
 
@@ -365,6 +360,7 @@ These amazing people have contributed code to this project:
 <a href="https://github.com/bevry/ropo/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
 
 <!-- /BACKERS -->
+
 
 <!-- LICENSE/ -->
 

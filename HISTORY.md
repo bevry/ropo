@@ -1,5 +1,11 @@
 # History
 
+## v2.0.1 2019 January 14
+
+-   Fixed JSDoc types
+-   Fixed README example
+-   Updated [base files](https://github.com/bevry/base) and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+
 ## v2.0.0 2018 June 26
 
 -   First argument in replace callbacks is now an object of the sections `outer`, `inner`, `content`

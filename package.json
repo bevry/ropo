@@ -1,6 +1,6 @@
 {
   "name": "ropo",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "String replacement utilities with support for both synchronous and asynchronous replacements. Supports replacing regular expressions, HTML Elements, and comment elements. Compatible with async/await.",
   "homepage": "https://github.com/bevry/ropo",
   "license": "MIT",

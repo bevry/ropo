@@ -1,5 +1,10 @@
 # History
 
+## v2.2.0 2019 November 18
+
+-   Converted to TypeScript
+-   Updated [base files](https://github.com/bevry/base) and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)
+
 ## v2.1.0 2019 November 8
 
 -   Updated [base files](https://github.com/bevry/base) and [editions](https://editions.bevry.me) using [boundation](https://github.com/bevry/boundation)

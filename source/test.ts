@@ -1,30 +1,33 @@
 /* eslint max-params:0 */
-'use strict'
 
-const { equal } = require('assert-helpers')
-const kava = require('kava')
-const {
+import { equal } from 'assert-helpers'
+import kava from 'kava'
+import trimIndentation from 'trim-indentation'
+import spawn from 'await-spawn'
+import pathUtil from 'path'
+import {
 	extractAttribute,
 	replaceElementSync,
-	replaceElementAsync
-} = require('./')
-const trimIndentation = require('trim-indentation')
+	replaceElementAsync,
+	replaceSyncCallback,
+	replaceAsyncCallback
+} from './'
 
-const spawn = require('await-spawn')
-const pathUtil = require('path')
+type tests = Array<{
+	name: string
+	element: RegExp
+	source: string
+	expected: any
+	replace: replaceSyncCallback
+}>
+
 const root = pathUtil.join(__dirname, '..')
-
-// ------------------------------------
-// Tests
-
-const powerResult = Math.pow(Math.pow(1.1, Math.pow(2.1, 2.2)), 1.2)
-
-const powerAttributesResult = Math.pow(
-	Math.pow(Math.pow(2.1, Math.pow(3.2, 3.1)), 2.2),
-	1.1
+const powerResult = String(Math.pow(Math.pow(1.1, Math.pow(2.1, 2.2)), 1.2))
+const powerAttributesResult = String(
+	Math.pow(Math.pow(Math.pow(2.1, Math.pow(3.2, 3.1)), 2.2), 1.1)
 )
 
-const replaceElementTests = [
+const replaceElementTests: tests = [
 	{
 		name: 'uppercase',
 		element: /uc|uppercase/,
@@ -121,7 +124,7 @@ const replaceElementTests = [
 		replace({ content }) {
 			return trimIndentation(content)
 				.split(/[\n\s]+/)
-				.reduce((a, b) => Math.pow(a, b))
+				.reduce((a, b) => String(Math.pow(Number(a), Number(b))))
 		}
 	},
 	{
@@ -139,12 +142,14 @@ const replaceElementTests = [
 			.trim(),
 		expected: powerAttributesResult,
 		replace({ content }, { attributes }) {
-			const y = extractAttribute(attributes, 'y')
-			const x = trimIndentation(content)
-				.split(/[\n\s]+/)
-				.reduce((a, b) => Math.pow(a, b))
+			const y = Number(extractAttribute(attributes, 'y'))
+			const x = Number(
+				trimIndentation(content)
+					.split(/[\n\s]+/)
+					.reduce((a, b) => String(Math.pow(Number(a), Number(b))))
+			)
 			const z = Math.pow(x, y)
-			return z
+			return String(z)
 		}
 	},
 	{

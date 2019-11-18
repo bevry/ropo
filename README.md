@@ -58,8 +58,8 @@ String replacement utilities with support for both synchronous and asynchronous 
 
 <ul><li><code>ropo/source/index.ts</code> is typescript source code with import for modules</li>
 <li><code>ropo/edition-browsers/index.js</code> is typescript compiled for browsers with import for modules</li>
-<li><code>ropo</code> aliases <code>ropo/edition-node-13/index.js</code></li>
-<li><code>ropo/edition-node-13/index.js</code> is typescript compiled for node.js 13 with require for modules</li></ul>
+<li><code>ropo</code> aliases <code>ropo/edition-node-12/index.js</code></li>
+<li><code>ropo/edition-node-12/index.js</code> is typescript compiled for node.js 12 with require for modules</li></ul>
 
 <!-- /INSTALL -->
 

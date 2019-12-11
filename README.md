@@ -74,16 +74,14 @@ String replacement utilities with support for both synchronous and asynchronous 
 <!-- <x-example> -->
 
 ```js
-'use strict'
-
-const { strictEqual } = require('assert')
-const {
+import { strictEqual } from 'assert'
+import {
     extractAttribute,
     replaceSync,
     replaceAsync,
     replaceElementSync,
     replaceElementAsync
-} = require('ropo')
+} from 'ropo'
 
 async function main() {
     // uppercase `bc` of `abcd`

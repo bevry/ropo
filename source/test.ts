@@ -10,7 +10,7 @@ import {
 	replaceElementSync,
 	replaceElementAsync,
 	replaceSyncCallback,
-	replaceAsyncCallback
+	replaceAsyncCallback,
 } from './'
 
 type tests = Array<{
@@ -69,7 +69,7 @@ const replaceElementTests: tests = [
 			.trim(),
 		replace({ content }) {
 			return trimIndentation(content).toUpperCase()
-		}
+		},
 	},
 	{
 		name: 'invert',
@@ -97,14 +97,9 @@ const replaceElementTests: tests = [
 		replace({ content }) {
 			return trimIndentation(content)
 				.split('\n')
-				.map(line =>
-					line
-						.split('')
-						.reverse()
-						.join('')
-				)
+				.map((line) => line.split('').reverse().join(''))
 				.join('\n')
-		}
+		},
 	},
 	{
 		name: 'power',
@@ -125,7 +120,7 @@ const replaceElementTests: tests = [
 			return trimIndentation(content)
 				.split(/[\n\s]+/)
 				.reduce((a, b) => String(Math.pow(Number(a), Number(b))))
-		}
+		},
 	},
 	{
 		name: 'power with attributes',
@@ -150,7 +145,7 @@ const replaceElementTests: tests = [
 			)
 			const z = Math.pow(x, y)
 			return String(z)
-		}
+		},
 	},
 	{
 		name: 'compact',
@@ -159,7 +154,7 @@ const replaceElementTests: tests = [
 		expected: '<h1>replaced</h1><h1>replaced</h1>',
 		replace() {
 			return 'replaced'
-		}
+		},
 	},
 	{
 		name: 'multi attribute',
@@ -172,38 +167,38 @@ const replaceElementTests: tests = [
 			const c = extractAttribute(attributes, 'data-y')
 			const d = extractAttribute(attributes, 'y')
 			return [a, b, c, d].join(' ')
-		}
-	}
+		},
+	},
 ]
 
 // ------------------------------------
 // Tests
 
-kava.suite('ropo', function(suite, test) {
-	suite('replaceElementTests', function(suite) {
-		replaceElementTests.forEach(function({
+kava.suite('ropo', function (suite, test) {
+	suite('replaceElementTests', function (suite) {
+		replaceElementTests.forEach(function ({
 			name,
 			element,
 			source,
 			expected,
-			replace
+			replace,
 		}) {
-			suite(name, function(suite, test) {
-				test('replaceElementSync', function() {
+			suite(name, function (suite, test) {
+				test('replaceElementSync', function () {
 					const actual = replaceElementSync(source, element, replace)
 					equal(actual, expected)
 				})
-				test('replaceElementAsync', function(done) {
-					replaceElementAsync(source, element, function(...args) {
-						return new Promise(function(resolve) {
-							process.nextTick(function() {
+				test('replaceElementAsync', function (done) {
+					replaceElementAsync(source, element, function (...args) {
+						return new Promise(function (resolve) {
+							process.nextTick(function () {
 								const result = replace(...args)
 								resolve(result)
 							})
 						})
 					})
 						.catch(done)
-						.then(actual => {
+						.then((actual) => {
 							equal(actual, expected)
 							done()
 						})
@@ -212,7 +207,7 @@ kava.suite('ropo', function(suite, test) {
 		})
 	})
 
-	test('example', function(done) {
+	test('example', function (done) {
 		const expected = `aBCd
 		aBCd
 		hello gninrom doog world
@@ -230,7 +225,7 @@ kava.suite('ropo', function(suite, test) {
 		const path = pathUtil.join(root, 'example.js')
 		spawn('node', [path], { cwd: root })
 			.catch(done)
-			.then(function(stdout) {
+			.then(function (stdout) {
 				equal(stdout.toString(), expected)
 				done()
 			})

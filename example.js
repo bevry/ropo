@@ -6,10 +6,10 @@ const {
 	replaceSync,
 	replaceAsync,
 	replaceElementSync,
-	replaceElementAsync
+	replaceElementAsync,
 } = require('./')
 
-async function main () {
+async function main() {
 	// uppercase `bc` of `abcd`
 	console.log(
 		replaceSync('abcd', /bc/, function ({ content }) {
@@ -40,10 +40,7 @@ async function main () {
 				strictEqual(section.outer, 'BEGIN good morning END')
 				strictEqual(section.inner, null)
 				strictEqual(section.content, section.outer)
-				return captures.inside
-					.split('')
-					.reverse()
-					.join('')
+				return captures.inside.split('').reverse().join('')
 			}
 		)
 	)
@@ -58,10 +55,7 @@ async function main () {
 				strictEqual(section.outer, 'BEGIN good morning END')
 				strictEqual(section.inner, captures.inner)
 				strictEqual(section.content, captures.inner)
-				return section.content
-					.split('')
-					.reverse()
-					.join('')
+				return section.content.split('').reverse().join('')
 			}
 		)
 	)
@@ -73,10 +67,7 @@ async function main () {
 			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
 			new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
 			function ({ content }) {
-				return content
-					.split('')
-					.reverse()
-					.join('')
+				return content.split('').reverse().join('')
 			}
 		)
 	)
@@ -101,10 +92,7 @@ async function main () {
 			'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
 			new RegExp('(?<element>INVERT:\\d+) (?<whatever>.+?) /\\k<element>'),
 			function (sections, { whatever }) {
-				return whatever
-					.split('')
-					.reverse()
-					.join('')
+				return whatever.split('').reverse().join('')
 			}
 		)
 	)
@@ -163,8 +151,8 @@ async function main () {
 	// we can even fetch attributes
 	console.log(
 		replaceElementSync('<x-pow power=10>2</x-pow>', /x-pow/, function (
-		{ content },
-		{ attributes }
+			{ content },
+			{ attributes }
 		) {
 			const power = extractAttribute(attributes, 'power')
 			const result = Math.pow(content, power)

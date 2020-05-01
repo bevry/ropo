@@ -1,20 +1,27 @@
+version: ~> 1.0
 sudo: false
 language: node_js
 node_js:
-- '10'
-- '12'
+  - '10'
+  - '12'
+  - '13'
+  - '14'
 matrix:
   fast_finish: true
   allow_failures: []
 cache: npm
 install:
-- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/c91c9d5eef34ecb0e92029667fd5052640225fa3/scripts/node-install.bash)"
+  - >-
+    eval "$(curl -fsSL
+    https://raw.githubusercontent.com/bevry/awesome-travis/master/scripts/node-install.bash)"
 before_script:
-- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/c91c9d5eef34ecb0e92029667fd5052640225fa3/scripts/node-verify.bash)"
+  - >-
+    eval "$(curl -fsSL
+    https://raw.githubusercontent.com/bevry/awesome-travis/master/scripts/node-verify.bash)"
 after_success:
-- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/c91c9d5eef34ecb0e92029667fd5052640225fa3/scripts/surge.bash)"
-- eval "$(curl -fsSL https://raw.githubusercontent.com/bevry/awesome-travis/c91c9d5eef34ecb0e92029667fd5052640225fa3/scripts/node-publish.bash)"
-notifications:
-  email:
-    recipients:
-      secure: Q7VP8PCkLqYIXtUDX59brCXjaPL403PZMeDOJyCFwuEugdxnUk4lvMMJAyyNRjM+RHuMT/lKaMQIyyrN9sysrYwQY1i44+PT8iH7+iRDTcWcN7fLJF2bbRL1VOlUIxUni+g3OXRApUhydWOv63vsv7c7gIs5QFoQtbSHpym1mNg2ZUdNH962OuleTD3hrJ7QVHYnV+ZvSWDq6kFJKxZj+wlBssQ0eBU4mWaycNH8wNdQP61/sx8PsqnOr95NcnSH8hgtTQmQOywnLbp+OyPWE842ynQSJ96s31Kc0FYxdCNzdabHrYsVznJt6OzTaWaaE331ADJcq4FR/rBVWXIPQNoCddhuzT8UXRE8+tEVDo3IW7OOLt2XjrRPLRirPfoabYONkEFXa75KbuPSDz6M3YUzaJlnWkQ6/lYzNMFZLAFzcxklQje+euEQA4iG9Ip2On/1czW0Y1TKdzHJ1NdxkXUM/Yd3y8W3B3RgFGMGgEOLo22qlt7bWdmg0kI5F27HL23QzlCltqjp26WBMrMiPgl+6fkAn3XfJs9/cY+UNrxk3ZG3IxHe88wngONprQpsWDoEIwQ+Zk20FahoHe3yaeOWhOPVNCWSkEpwcxj9bCxThv3vJPRNmQvEBdfe6FH1QxuvGTtLU7wXMpx/xnlGQ2EjS8SfKzJa49lyzs50QQs=
+  - >-
+    eval "$(curl -fsSL
+    https://raw.githubusercontent.com/bevry/awesome-travis/master/scripts/surge.bash)"
+  - >-
+    eval "$(curl -fsSL
+    https://raw.githubusercontent.com/bevry/awesome-travis/master/scripts/node-publish.bash)"

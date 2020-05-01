@@ -35,39 +35,9 @@ String replacement utilities with support for both synchronous and asynchronous 
 
 > `ropo` is `replace` in [Yoruba](https://en.wikipedia.org/wiki/Yoruba_language)
 
-<!-- INSTALL/ -->
-
-<h2>Install</h2>
-
-<a href="https://npmjs.com" title="npm is a package manager for javascript"><h3>npm</h3></a>
-<ul>
-<li>Install: <code>npm install --save ropo</code></li>
-<li>Require: <code>require('ropo')</code></li>
-</ul>
-
-<a href="https://jspm.io" title="Native ES Modules CDN"><h3>jspm</h3></a>
-
-``` html
-<script type="module">
-    import * as pkg from '//dev.jspm.io/ropo'
-</script>
-```
-
-<h3><a href="https://editions.bevry.me" title="Editions are the best way to produce and consume packages you care about.">Editions</a></h3>
-
-<p>This package is published with the following editions:</p>
-
-<ul><li><code>ropo/source/index.ts</code> is typescript source code with import for modules</li>
-<li><code>ropo/edition-browsers/index.js</code> is typescript compiled for browsers with import for modules</li>
-<li><code>ropo</code> aliases <code>ropo/edition-node-12/index.js</code></li>
-<li><code>ropo/edition-node-12/index.js</code> is typescript compiled for node.js 12 with require for modules</li></ul>
-
-<!-- /INSTALL -->
-
-
 ## Usage
 
-[API Documentation.](http://master.ropo.bevry.surge.sh/docs/)
+[Complete API Documentation.](http://master.ropo.bevry.surge.sh/docs/globals.html)
 
 [Tests.](https://github.com/bevry/ropo/blob/master/source/test.ts)
 
@@ -80,13 +50,13 @@ import {
     replaceSync,
     replaceAsync,
     replaceElementSync,
-    replaceElementAsync
+    replaceElementAsync,
 } from 'ropo'
 
 async function main() {
     // uppercase `bc` of `abcd`
     console.log(
-        replaceSync('abcd', /bc/, function({ content }) {
+        replaceSync('abcd', /bc/, function ({ content }) {
             return content.toUpperCase()
         })
     )
@@ -94,9 +64,9 @@ async function main() {
 
     // uppercase `bc` of `abcd` asynchronously
     console.log(
-        await replaceAsync('abcd', /bc/, function({ content }) {
-            return new Promise(function(resolve) {
-                process.nextTick(function() {
+        await replaceAsync('abcd', /bc/, function ({ content }) {
+            return new Promise(function (resolve) {
+                process.nextTick(function () {
                     resolve(content.toUpperCase())
                 })
             })
@@ -110,14 +80,11 @@ async function main() {
         replaceSync(
             'hello BEGIN good morning END world',
             new RegExp('BEGIN (?<inside>.+?) END'),
-            function(section, captures) {
+            function (section, captures) {
                 strictEqual(section.outer, 'BEGIN good morning END')
                 strictEqual(section.inner, null)
                 strictEqual(section.content, section.outer)
-                return captures.inside
-                    .split('')
-                    .reverse()
-                    .join('')
+                return captures.inside.split('').reverse().join('')
             }
         )
     )
@@ -128,14 +95,11 @@ async function main() {
         replaceSync(
             'hello BEGIN good morning END world',
             new RegExp('BEGIN (?<inner>.+?) END'),
-            function(section, captures) {
+            function (section, captures) {
                 strictEqual(section.outer, 'BEGIN good morning END')
                 strictEqual(section.inner, captures.inner)
                 strictEqual(section.content, captures.inner)
-                return section.content
-                    .split('')
-                    .reverse()
-                    .join('')
+                return section.content.split('').reverse().join('')
             }
         )
     )
@@ -146,11 +110,8 @@ async function main() {
         replaceSync(
             'hello INVERT:1 good INVERT:2 guten INVERT:3 gday /INVERT:3 morgen /INVERT:2 morning /INVERT:1 world',
             new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
-            function({ content }) {
-                return content
-                    .split('')
-                    .reverse()
-                    .join('')
+            function ({ content }) {
+                return content.split('').reverse().join('')
             }
         )
     )
@@ -176,11 +137,8 @@ async function main() {
             new RegExp(
                 '(?<element>INVERT:\\d+) (?<whatever>.+?) /\\k<element>'
             ),
-            function(sections, { whatever }) {
-                return whatever
-                    .split('')
-                    .reverse()
-                    .join('')
+            function (sections, { whatever }) {
+                return whatever.split('').reverse().join('')
             }
         )
     )
@@ -200,7 +158,7 @@ async function main() {
         replaceElementSync(
             '<strong>I am <x-uppercase>awesome</x-uppercase></strong>',
             /x-uppercase/,
-            function({ content }) {
+            function ({ content }) {
                 return content.toUpperCase()
             }
         )
@@ -212,7 +170,7 @@ async function main() {
         replaceElementSync(
             '<x-pow>2 <x-power>3 4</x-power> 5</x-pow>',
             /x-pow(?:er)?/,
-            function({ content }) {
+            function ({ content }) {
                 const result = content
                     .split(/[\n\s]+/)
                     .reduce((a, b) => Math.pow(a, b))
@@ -230,7 +188,7 @@ async function main() {
         replaceElementSync(
             '<x-pow>2 <x-pow:2>3 4</x-pow:2> 5</x-pow>',
             /x-pow(?::\d+)?/,
-            function({ content }) {
+            function ({ content }) {
                 const result = content
                     .split(/[\n\s]+/)
                     .reduce((a, b) => Math.pow(a, b))
@@ -242,7 +200,7 @@ async function main() {
 
     // we can even fetch attributes
     console.log(
-        replaceElementSync('<x-pow power=10>2</x-pow>', /x-pow/, function(
+        replaceElementSync('<x-pow power=10>2</x-pow>', /x-pow/, function (
             { content },
             { attributes }
         ) {
@@ -258,7 +216,7 @@ async function main() {
         await replaceElementAsync(
             '<x-readfile>example-fixture.txt</x-readfile>',
             /x-readfile/,
-            function({ content }) {
+            function ({ content }) {
                 return require('fs').promises.readFile(content, 'utf8')
             }
         )
@@ -270,7 +228,7 @@ async function main() {
         replaceElementSync(
             '<x-pow x=2 y=3 /> <x-pow>4 6</x-pow>',
             /x-pow/,
-            function({ content }, { attributes }) {
+            function ({ content }, { attributes }) {
                 const x =
                     extractAttribute(attributes, 'x') || content.split(' ')[0]
                 const y =
@@ -303,6 +261,53 @@ hello world from example-fixture.txt
 ```
 
 <!-- </x-example> -->
+
+<!-- INSTALL/ -->
+
+<h2>Install</h2>
+
+<a href="https://npmjs.com" title="npm is a package manager for javascript"><h3>npm</h3></a>
+<ul>
+<li>Install: <code>npm install --save ropo</code></li>
+<li>Import: <code>import * as pkg from ('ropo')</code></li>
+<li>Require: <code>const pkg = require('ropo')</code></li>
+</ul>
+
+<a href="https://www.pika.dev/cdn" title="100% Native ES Modules CDN"><h3>pika</h3></a>
+
+``` html
+<script type="module">
+    import * as pkg from '//cdn.pika.dev/ropo/^2.7.0'
+</script>
+```
+
+<a href="https://unpkg.com" title="unpkg is a fast, global content delivery network for everything on npm"><h3>unpkg</h3></a>
+
+``` html
+<script type="module">
+    import * as pkg from '//unpkg.com/ropo@^2.7.0'
+</script>
+```
+
+<a href="https://jspm.io" title="Native ES Modules CDN"><h3>jspm</h3></a>
+
+``` html
+<script type="module">
+    import * as pkg from '//dev.jspm.io/ropo@2.7.0'
+</script>
+```
+
+<h3><a href="https://editions.bevry.me" title="Editions are the best way to produce and consume packages you care about.">Editions</a></h3>
+
+<p>This package is published with the following editions:</p>
+
+<ul><li><code>ropo/source/index.ts</code> is <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a> source code with <a href="https://babeljs.io/docs/learn-es2015/#modules" title="ECMAScript Modules">Import</a> for modules</li>
+<li><code>ropo</code> aliases <code>ropo/edition-esnext/index.js</code></li>
+<li><code>ropo/edition-esnext/index.js</code> is <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a> compiled against <a href="https://en.wikipedia.org/wiki/ECMAScript#ES.Next" title="ECMAScript Next">ESNext</a> for <a href="https://nodejs.org" title="Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine">Node.js</a> with <a href="https://nodejs.org/dist/latest-v5.x/docs/api/modules.html" title="Node/CJS Modules">Require</a> for modules</li>
+<li><code>ropo/edition-browsers/index.js</code> is <a href="https://www.typescriptlang.org/" title="TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. ">TypeScript</a> compiled against <a href="https://en.wikipedia.org/wiki/ECMAScript#10th_Edition_-_ECMAScript_2019" title="ECMAScript ES2019">ES2019</a> for web browsers with <a href="https://babeljs.io/docs/learn-es2015/#modules" title="ECMAScript Modules">Import</a> for modules</li></ul>
+
+<!-- /INSTALL -->
+
 
 <!-- HISTORY/ -->
 

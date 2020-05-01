@@ -155,7 +155,7 @@ export function replaceSync(
 	regex: RegExp,
 	replace: replaceSyncCallback
 ): string {
-	const result = source.replace(regex, function(substring, ...args) {
+	const result = source.replace(regex, function (substring, ...args) {
 		const captures: Captures = args[args.length - 1] || {}
 		const outer = captures.outer || substring
 		const inner = captures.inner == null ? null : captures.inner

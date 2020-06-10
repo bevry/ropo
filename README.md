@@ -277,7 +277,7 @@ hello world from example-fixture.txt
 
 ``` html
 <script type="module">
-    import * as pkg from '//cdn.pika.dev/ropo/^2.11.0'
+    import * as pkg from '//cdn.pika.dev/ropo/^2.12.0'
 </script>
 ```
 
@@ -285,7 +285,7 @@ hello world from example-fixture.txt
 
 ``` html
 <script type="module">
-    import * as pkg from '//unpkg.com/ropo@^2.11.0'
+    import * as pkg from '//unpkg.com/ropo@^2.12.0'
 </script>
 ```
 
@@ -293,7 +293,7 @@ hello world from example-fixture.txt
 
 ``` html
 <script type="module">
-    import * as pkg from '//dev.jspm.io/ropo@2.11.0'
+    import * as pkg from '//dev.jspm.io/ropo@2.12.0'
 </script>
 ```
 

@@ -4,7 +4,7 @@ import { equal } from 'assert-helpers'
 import kava from 'kava'
 import trimIndentation from 'trim-indentation'
 import spawn from 'await-spawn'
-import pathUtil from 'path'
+import * as pathUtil from 'path'
 import {
 	extractAttribute,
 	replaceElementSync,

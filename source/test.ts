@@ -222,12 +222,12 @@ kava.suite('ropo', function (suite, test) {
 		8 4096
 		`.replace(/^\t{2}/gm, '')
 
-		const path = pathUtil.join(root, 'example.js')
+		const path = pathUtil.join(root, 'example.cjs')
 		spawn('node', [path], { cwd: root })
-			.catch(done)
 			.then(function (stdout) {
 				equal(stdout.toString(), expected)
 				done()
 			})
+			.catch(done)
 	})
 })

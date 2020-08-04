@@ -1,6 +1,6 @@
 {
   "name": "ropo",
-  "version": "2.19.0",
+  "version": "2.20.0",
   "description": "String replacement utilities with support for both synchronous and asynchronous replacements. Supports replacing regular expressions, HTML Elements, and comment elements. Compatible with async/await.",
   "homepage": "https://github.com/bevry/ropo",
   "license": "MIT",
@@ -164,27 +164,27 @@
   "browser": "edition-browsers/index.js",
   "module": "edition-browsers/index.js",
   "dependencies": {
-    "typechecker": "^7.11.0"
+    "typechecker": "^7.12.0"
   },
   "devDependencies": {
-    "@bevry/update-contributors": "^1.13.0",
-    "@typescript-eslint/eslint-plugin": "^3.7.0",
-    "@typescript-eslint/parser": "^3.7.0",
-    "assert-helpers": "^6.18.0",
-    "eslint": "^7.5.0",
-    "eslint-config-bevry": "^3.17.0",
+    "@bevry/update-contributors": "^1.14.0",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
+    "assert-helpers": "^6.19.0",
+    "eslint": "^7.6.0",
+    "eslint-config-bevry": "^3.18.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "kava": "^5.9.0",
+    "kava": "^5.10.0",
     "make-deno-edition": "^0.15.0",
     "prettier": "^2.0.5",
-    "projectz": "^2.12.0",
+    "projectz": "^2.13.0",
     "surge": "^0.21.6",
-    "trim-indentation": "^4.7.0",
+    "trim-indentation": "^4.8.0",
     "typedoc": "^0.17.8",
     "typescript": "^3.9.7",
-    "valid-directory": "^2.6.0",
-    "valid-module": "^1.10.0"
+    "valid-directory": "^2.7.0",
+    "valid-module": "^1.11.0"
   },
   "scripts": {
     "our:clean": "rm -Rf ./docs ./edition* ./es2015 ./es5 ./out ./.next",

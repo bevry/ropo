@@ -4,14 +4,19 @@ import { equal } from 'assert-helpers'
 import kava from 'kava'
 import trimIndentation from 'trim-indentation'
 import spawn from 'await-spawn'
-import * as pathUtil from 'path'
+import { join } from 'path'
 import {
 	extractAttribute,
 	replaceElementSync,
 	replaceElementAsync,
 	replaceSyncCallback,
 	replaceAsyncCallback,
-} from './'
+} from './index.js'
+
+import filedirname from 'filedirname'
+const [file, dir] = filedirname()
+const root = join(dir, '..')
+const examplePath = join(root, 'example.cjs')
 
 type tests = Array<{
 	name: string
@@ -21,7 +26,6 @@ type tests = Array<{
 	replace: replaceSyncCallback
 }>
 
-const root = pathUtil.join(__dirname, '..')
 const powerResult = String(Math.pow(Math.pow(1.1, Math.pow(2.1, 2.2)), 1.2))
 const powerAttributesResult = String(
 	Math.pow(Math.pow(Math.pow(2.1, Math.pow(3.2, 3.1)), 2.2), 1.1)
@@ -222,8 +226,7 @@ kava.suite('ropo', function (suite, test) {
 		8 4096
 		`.replace(/^\t{2}/gm, '')
 
-		const path = pathUtil.join(root, 'example.cjs')
-		spawn('node', [path], { cwd: root })
+		spawn('node', [examplePath], { cwd: root })
 			.then(function (stdout) {
 				equal(stdout.toString(), expected)
 				done()

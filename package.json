@@ -186,7 +186,7 @@
     "make-deno-edition": "^1.2.0",
     "prettier": "^2.1.2",
     "projectz": "^2.17.0",
-    "surge": "^0.21.6",
+    "surge": "^0.23.0",
     "trim-indentation": "^4.11.0",
     "typedoc": "^0.19.2",
     "typescript": "^4.0.5",

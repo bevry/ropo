@@ -150,14 +150,15 @@ async function main() {
 
 	// we can even fetch attributes
 	console.log(
-		replaceElementSync('<x-pow power=10>2</x-pow>', /x-pow/, function (
-			{ content },
-			{ attributes }
-		) {
-			const power = extractAttribute(attributes, 'power')
-			const result = Math.pow(content, power)
-			return result
-		})
+		replaceElementSync(
+			'<x-pow power=10>2</x-pow>',
+			/x-pow/,
+			function ({ content }, { attributes }) {
+				const power = extractAttribute(attributes, 'power')
+				const result = Math.pow(content, power)
+				return result
+			}
+		)
 	)
 	// => 1024
 

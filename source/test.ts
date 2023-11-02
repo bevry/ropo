@@ -28,7 +28,7 @@ type tests = Array<{
 
 const powerResult = String(Math.pow(Math.pow(1.1, Math.pow(2.1, 2.2)), 1.2))
 const powerAttributesResult = String(
-	Math.pow(Math.pow(Math.pow(2.1, Math.pow(3.2, 3.1)), 2.2), 1.1)
+	Math.pow(Math.pow(Math.pow(2.1, Math.pow(3.2, 3.1)), 2.2), 1.1),
 )
 
 const replaceElementTests: tests = [
@@ -145,7 +145,7 @@ const replaceElementTests: tests = [
 			const x = Number(
 				trimIndentation(content)
 					.split(/[\n\s]+/)
-					.reduce((a, b) => String(Math.pow(Number(a), Number(b))))
+					.reduce((a, b) => String(Math.pow(Number(a), Number(b)))),
 			)
 			const z = Math.pow(x, y)
 			return String(z)

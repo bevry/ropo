@@ -14,7 +14,7 @@ async function main() {
 	console.log(
 		replaceSync('abcd', /bc/, function ({ content }) {
 			return content.toUpperCase()
-		})
+		}),
 	)
 	// => aBCd
 
@@ -26,7 +26,7 @@ async function main() {
 					resolve(content.toUpperCase())
 				})
 			})
-		})
+		}),
 	)
 	// => aBCd
 
@@ -41,8 +41,8 @@ async function main() {
 				strictEqual(section.inner, null)
 				strictEqual(section.content, section.outer)
 				return captures.inside.split('').reverse().join('')
-			}
-		)
+			},
+		),
 	)
 	// => hello gninrom doog world
 
@@ -56,8 +56,8 @@ async function main() {
 				strictEqual(section.inner, captures.inner)
 				strictEqual(section.content, captures.inner)
 				return section.content.split('').reverse().join('')
-			}
-		)
+			},
+		),
 	)
 	// => hello gninrom doog world
 
@@ -68,8 +68,8 @@ async function main() {
 			new RegExp('(?<element>INVERT:\\d+) (?<inner>.+?) /\\k<element>'),
 			function ({ content }) {
 				return content.split('').reverse().join('')
-			}
-		)
+			},
+		),
 	)
 	// => hello gninrom guten yadg morgen doog world
 	// notice how the text is replaced correctly, gday has 3 inversions applied, so it is inverted
@@ -93,8 +93,8 @@ async function main() {
 			new RegExp('(?<element>INVERT:\\d+) (?<whatever>.+?) /\\k<element>'),
 			function (sections, { whatever }) {
 				return whatever.split('').reverse().join('')
-			}
-		)
+			},
+		),
 	)
 	// => hello gninrom 2:TREVNI/ negrom 3:TREVNI/ yadg 3:TREVNI netug 2:TREVNI doog world
 	// as we can see, recursion was correctly disabled
@@ -114,8 +114,8 @@ async function main() {
 			/x-uppercase/,
 			function ({ content }) {
 				return content.toUpperCase()
-			}
-		)
+			},
+		),
 	)
 	// => <strong>I am AWESOME</strong>
 
@@ -127,8 +127,8 @@ async function main() {
 			function ({ content }) {
 				const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 				return result
-			}
-		)
+			},
+		),
 	)
 	// => 8.263199609878108e+121
 	// note that this is the correct result of: 2 ^ (3 ^ 4) ^ 5
@@ -143,8 +143,8 @@ async function main() {
 			function ({ content }) {
 				const result = content.split(/[\n\s]+/).reduce((a, b) => Math.pow(a, b))
 				return result
-			}
-		)
+			},
+		),
 	)
 	// => 8.263199609878108e+121
 
@@ -157,8 +157,8 @@ async function main() {
 				const power = extractAttribute(attributes, 'power')
 				const result = Math.pow(content, power)
 				return result
-			}
-		)
+			},
+		),
 	)
 	// => 1024
 
@@ -169,8 +169,8 @@ async function main() {
 			/x-readfile/,
 			function ({ content }) {
 				return require('fs').promises.readFile(content, 'utf8')
-			}
-		)
+			},
+		),
 	)
 	// => hello world from example-fixture.txt
 
@@ -184,8 +184,8 @@ async function main() {
 				const y = extractAttribute(attributes, 'y') || content.split(' ')[1]
 				const result = Math.pow(x, y)
 				return result
-			}
-		)
+			},
+		),
 	)
 	// => 8 4096
 }

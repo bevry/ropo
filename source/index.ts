@@ -27,12 +27,12 @@ interface Sections {
  */
 export type replaceSyncCallback = (
 	sections: Sections,
-	captures: Captures
+	captures: Captures,
 ) => string
 
 export type replaceAsyncCallback = (
 	sections: Sections,
-	captures: Captures
+	captures: Captures,
 ) => Promise<string>
 
 // ====================================
@@ -55,7 +55,7 @@ export function mergeFlags(a: string, b: string): string {
  */
 export function prepareElementRegex(
 	input: RegExp,
-	addFlags: string = ''
+	addFlags: string = '',
 ): RegExpObject {
 	let source, flags
 	if (isRegExp(input)) {
@@ -72,7 +72,7 @@ export function prepareElementRegex(
  * @private
  */
 const elementsRegex = new RegExp(
-	'<(?<element>[-a-z]+)(?<attributes>\\s+.+?)?(?:\\/>|>(?<inner>[\\s\\S]*?)<\\/\\k<element>>)'
+	'<(?<element>[-a-z]+)(?<attributes>\\s+.+?)?(?:\\/>|>(?<inner>[\\s\\S]*?)<\\/\\k<element>>)',
 )
 
 /**
@@ -85,7 +85,7 @@ export function getElementRegex(element: RegExp, addFlags?: string): RegExp {
 	const { source, flags } = prepareElementRegex(element, addFlags)
 	const regex = new RegExp(
 		`<(?<element>${source})(?<attributes>\\s+.+?)?(?:\\/>|>(?<inner>[\\s\\S]*?)<\\/\\k<element>>)`,
-		flags
+		flags,
 	)
 	return regex
 }
@@ -95,7 +95,7 @@ export function getElementRegex(element: RegExp, addFlags?: string): RegExp {
  * @private
  */
 const commentElementsRegex = new RegExp(
-	'<!-- <(?<element>[-a-z]+)(?<attributes>\\s+.+?)?(?:\\/>|> -->(?<inner>[\\s\\S]*?)<!-- <\\/\\k<element>> -->)'
+	'<!-- <(?<element>[-a-z]+)(?<attributes>\\s+.+?)?(?:\\/>|> -->(?<inner>[\\s\\S]*?)<!-- <\\/\\k<element>> -->)',
 )
 
 /**
@@ -106,12 +106,12 @@ const commentElementsRegex = new RegExp(
  */
 export function getCommentElementRegex(
 	element: RegExp,
-	addFlags?: string
+	addFlags?: string,
 ): RegExp {
 	const { source, flags } = prepareElementRegex(element, addFlags)
 	const regex = new RegExp(
 		`<!-- <(?<element>${source})(?<attributes>\\s+.+?)?(?:\\/>|> -->(?<inner>[\\s\\S]*?)<!-- <\\/\\k<element>> -->)`,
-		flags
+		flags,
 	)
 	return regex
 }
@@ -126,11 +126,11 @@ export function getCommentElementRegex(
  */
 export function extractAttribute(
 	attributes: string,
-	attribute: string
+	attribute: string,
 ): string {
 	const regex = new RegExp(
 		`\\s(${attribute})\\s*=\\s*('[^']+'|\\"[^\\"]+\\"|[^'\\"\\s]\\S*)`,
-		'ig'
+		'ig',
 	)
 	let value = ''
 	while (true) {
@@ -153,7 +153,7 @@ export function extractAttribute(
 export function replaceSync(
 	source: string,
 	regex: RegExp,
-	replace: replaceSyncCallback
+	replace: replaceSyncCallback,
 ): string {
 	const result = source.replace(regex, function (substring, ...args) {
 		const captures: Captures = args[args.length - 1] || {}
@@ -179,7 +179,7 @@ export function replaceSync(
 export async function replaceAsync(
 	source: string,
 	regex: RegExp,
-	replace: replaceAsyncCallback
+	replace: replaceAsyncCallback,
 ): Promise<string> {
 	// evaluate if the `y` (sticky) flag will speed this up
 	const match = source.match(regex)
@@ -213,7 +213,7 @@ export async function replaceAsync(
  */
 export function replaceElementsSync(
 	source: string,
-	replace: replaceSyncCallback
+	replace: replaceSyncCallback,
 ): string {
 	return replaceSync(source, elementsRegex, replace)
 }
@@ -225,7 +225,7 @@ export function replaceElementsSync(
  */
 export async function replaceElementsAsync(
 	source: string,
-	replace: replaceAsyncCallback
+	replace: replaceAsyncCallback,
 ): Promise<string> {
 	return await replaceAsync(source, elementsRegex, replace)
 }
@@ -242,7 +242,7 @@ export async function replaceElementsAsync(
 export function replaceElementSync(
 	source: string,
 	element: RegExp,
-	replace: replaceSyncCallback
+	replace: replaceSyncCallback,
 ): string {
 	const regex = getElementRegex(element, 'g')
 	const result = replaceSync(source, regex, replace)
@@ -258,7 +258,7 @@ export function replaceElementSync(
 export async function replaceElementAsync(
 	source: string,
 	element: RegExp,
-	replace: replaceAsyncCallback
+	replace: replaceAsyncCallback,
 ): Promise<string> {
 	const regex = getElementRegex(element)
 	return await replaceAsync(source, regex, replace)
@@ -274,7 +274,7 @@ export async function replaceElementAsync(
  */
 export function replaceCommentElementsSync(
 	source: string,
-	replace: replaceSyncCallback
+	replace: replaceSyncCallback,
 ): string {
 	return replaceSync(source, commentElementsRegex, replace)
 }
@@ -286,7 +286,7 @@ export function replaceCommentElementsSync(
  */
 export async function replaceCommentElementsAsync(
 	source: string,
-	replace: replaceAsyncCallback
+	replace: replaceAsyncCallback,
 ): Promise<string> {
 	return await replaceAsync(source, commentElementsRegex, replace)
 }
@@ -303,7 +303,7 @@ export async function replaceCommentElementsAsync(
 export function replaceCommentElementSync(
 	source: string,
 	element: RegExp,
-	replace: replaceSyncCallback
+	replace: replaceSyncCallback,
 ): string {
 	const regex = getCommentElementRegex(element, 'g')
 	return replaceSync(source, regex, replace)
@@ -318,7 +318,7 @@ export function replaceCommentElementSync(
 export function replaceCommentElementAsync(
 	source: string,
 	element: RegExp,
-	replace: replaceAsyncCallback
+	replace: replaceAsyncCallback,
 ): Promise<string> {
 	const regex = getCommentElementRegex(element)
 	return replaceAsync(source, regex, replace)

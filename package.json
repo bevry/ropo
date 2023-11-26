@@ -151,7 +151,7 @@
   "browser": "edition-browsers/index.js",
   "module": "edition-browsers/index.js",
   "dependencies": {
-    "typechecker": "^7.18.0"
+    "typechecker": "^9.0.0"
   },
   "devDependencies": {
     "@bevry/update-contributors": "^1.22.0",

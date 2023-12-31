@@ -169,7 +169,7 @@
     "prettier": "^3.0.3",
     "projectz": "^2.23.0",
     "surge": "^0.23.1",
-    "trim-indentation": "^4.14.0",
+    "trim-indentation": "^5.7.0",
     "typedoc": "^0.25.3",
     "typescript": "5.2.2",
     "valid-directory": "^4.0.0",
